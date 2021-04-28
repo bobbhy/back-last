@@ -1,0 +1,1 @@
+web: java -D server.port=43036 $JAVA_OPTS -jar target/polls-0.0.1-SNAPSHOT.jar
