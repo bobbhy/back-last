@@ -1,0 +1,38 @@
+version: "3"
+
+services:
+#   spring-boot:
+#     image: spring-boot
+#     container_name: spring-boot
+#     build:
+#       context: ./
+#       dockerfile: Dockerfile
+#     ports:
+#       - "5000:5000"
+#     networks:
+#       - spring-boot-mysql-network
+#     depends_on:
+#       - mysql-service
+
+  mysql-service:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    networks:
+      - spring-boot-mysql-network
+    restart: on-failure
+    ports:
+        - "3307:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=${SPRING_BOOT_MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${SPRING_BOOT_MYSQL_DATABASE}
+      - MYSQL_USER=${SPRING_BOOT_MYSQL_USER}
+      - MYSQL_PASSWORD=${SPRING_BOOT_MYSQL_PASSWORD}
+    volumes:
+      - mysql_db_data_container:/var/lib/mysql
+
+networks:
+  spring-boot-mysql-network:
+    driver: bridge
+
+volumes:
+  mysql_db_data_container:

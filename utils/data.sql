@@ -1,0 +1,14 @@
+Insert INTO roles VALUE("1","ROLE_STUDENT");
+INSERT INTO roles VALUE("2","ROLE_ADMIN");
+INSERT INTO roles VALUE("3","ROLE_MANAGER");
+INSERT INTO etablishment VALUE("1","Faculté des Langues des Lettres et des Arts");
+INSERT INTO etablishment VALUE("2","Faculté des Sciences Humaines et Sociales");
+INSERT INTO etablishment VALUE("3","Faculté des Sciences");
+INSERT INTO etablishment VALUE("4","Faculté d’Economie et de Gestion");
+INSERT INTO etablishment VALUE("5","Faculté des Sciences Juridiques et Politiques");
+INSERT INTO etablishment VALUE("6","Ecole Nationale de Commerce et de Gestion");
+INSERT INTO etablishment VALUE("7","Ecole Nationale des Sciences Appliquées");
+INSERT INTO etablishment VALUE("8","Ecole Supérieure de Technologie");
+INSERT INTO etablishment VALUE("9","Ecole Nationale Supérieure de Chimie");
+INSERT INTO etablishment VALUE("10","Ecole Supérieure d’Education et de Formation");
+INSERT INTO etablishment VALUE("11","Institut des Métiers de Sport");
