@@ -12,8 +12,9 @@ import com.forumensak.api.repository.UserRepository;
 import com.forumensak.api.repository.VerificationTokenRepository;
 import com.forumensak.api.security.JwtTokenProvider;
 import com.forumensak.api.security.UserPrincipal;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -33,16 +34,26 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
 public class AuthService {
+    @Autowired
     EtablishementRepository etablishementRepository;
+    @Autowired
     AuthenticationManager authenticationManager;
+    @Autowired
     UserRepository userRepository;
+    @Autowired
     RoleRepository roleRepository;
+    @Autowired
     PasswordEncoder passwordEncoder;
+    @Autowired
     JwtTokenProvider tokenProvider;
+    @Autowired
     VerificationTokenRepository verificationTokenRepository;
+    @Autowired
     MailService mailService;
+
+    @Value("${app.front}")
+    private String front;
 
     public ResponseEntity<?> signIn(SignInRequest signInRequest) {
         if (!userRepository.findByUsernameOrEmail(signInRequest.getUsernameOrEmail(), signInRequest.getUsernameOrEmail()).get().getEnabled()) {
@@ -117,13 +128,13 @@ public class AuthService {
             mailService.sendEmail(new NotificationEmail("Please activate your account",
                     user.getEmail(), "Thank you for signing up to forum ensak," +
                     "please click on the below url to activate your account :\n" +
-                    "<a href=\"http://localhost:3000/confirm?token=" + token + "\">Validate</a>"));
+                    "<a href=\""+front+"confirm?token=" + token + "\">Validate</a>"));
         }
         if (userRole.getId() == 3) {
             mailService.sendEmail(new NotificationEmail("Activate accout for enterprise manager",
                     "aymane.elmouhtarim@gmail.com", "Activate user," +user.getUsername()+", "+ user.getEmail() +
                     "by clicking here :\n" +
-                    "<a href=\"http://localhost:3000/admin"+"\">Check it out</a>"));
+                    "<a href=\""+front+"/admin"+"\">Check it out</a>"));
         }
 
         return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully, Please enable your account through your mail box"));
