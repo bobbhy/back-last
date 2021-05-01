@@ -1,4 +1,8 @@
-### Server app for developpment environment
+## Install dependencies
+
+`mvn install`
+
+## Server app for developpment environment
 
 `mvn spring-boot:run -Denv=dev`
 

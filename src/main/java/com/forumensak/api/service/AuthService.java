@@ -128,7 +128,7 @@ public class AuthService {
             mailService.sendEmail(new NotificationEmail("Please activate your account",
                     user.getEmail(), "Thank you for signing up to forum ensak," +
                     "please click on the below url to activate your account :\n" +
-                    "<a href=\""+front+"confirm?token=" + token + "\">Validate</a>"));
+                    "<a href=\""+front+"/confirm?token=" + token + "\">Validate</a>"));
         }
         if (userRole.getId() == 3) {
             mailService.sendEmail(new NotificationEmail("Activate accout for enterprise manager",

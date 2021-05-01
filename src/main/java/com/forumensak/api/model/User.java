@@ -67,7 +67,7 @@ public class User extends DateAudit {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "cv_id", referencedColumnName = "id")
     private Cv cv;
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="etablishment_id",referencedColumnName = "id")
     private Etablishment etablishment;
     @OneToOne(cascade = CascadeType.ALL)

@@ -92,7 +92,6 @@ public class CvService {
             String jwt = getJwtFromHeader(authHeader);
             long id = jwtTokenProvider.getUserIdFromJWT(jwt);
             User user = userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist"));
-
             user.getCv().setImage(file.getOriginalFilename());
             userRepository.save(user);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
@@ -158,14 +157,16 @@ public class CvService {
         try {
             String jwt = getJwtFromHeader(authHeader);
             long id = jwtTokenProvider.getUserIdFromJWT(jwt);
-            Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+            Optional<User> userOptional = Optional.ofNullable(
+                    userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
             User user = userOptional.get();
             experience.setCv(user.getCv());
             experienceRepository.save(experience);
             userRepository.save(user);
-            //getting the path of the post and append id of the post to the URI
-            URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(experience.getId()).toUri();
-            //returns the location of the created post
+            // getting the path of the post and append id of the post to the URI
+            URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                    .buildAndExpand(experience.getId()).toUri();
+            // returns the location of the created post
             return ResponseEntity.created(location).build();
         } catch (Exception e) {
             message = "Could not upload!";
@@ -184,7 +185,8 @@ public class CvService {
     public ResponseEntity<?> getExperienceById(long id) {
         String message = "";
         try {
-            Experience experience = experienceRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist"));
+            Experience experience = experienceRepository.findById(id)
+                    .orElseThrow(() -> new AppException("User id doesn't exist"));
             return ResponseEntity.status(HttpStatus.OK).body(experience);
         } catch (Exception e) {
             message = "Could not get experience with id " + id;
@@ -202,14 +204,16 @@ public class CvService {
         try {
             String jwt = getJwtFromHeader(authHeader);
             long id = jwtTokenProvider.getUserIdFromJWT(jwt);
-            Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+            Optional<User> userOptional = Optional.ofNullable(
+                    userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
             User user = userOptional.get();
             education.setCv(user.getCv());
             educationRepository.save(education);
             userRepository.save(user);
-            //getting the path of the post and append id of the post to the URI
-            URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(education.getId()).toUri();
-            //returns the location of the created post
+            // getting the path of the post and append id of the post to the URI
+            URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                    .buildAndExpand(education.getId()).toUri();
+            // returns the location of the created post
             return ResponseEntity.created(location).build();
         } catch (Exception e) {
             message = "Could not upload!";
@@ -221,7 +225,8 @@ public class CvService {
         String jwt = getJwtFromHeader(authHeader);
         long id = jwtTokenProvider.getUserIdFromJWT(jwt);
         User user = userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist"));
-        //List<Experience> experienceList = experienceRepository.findAllByCv(user.getCv());
+        // List<Experience> experienceList =
+        // experienceRepository.findAllByCv(user.getCv());
         List<Education> educationList = user.getCv().getEducations();
         return ResponseEntity.status(HttpStatus.OK).body(educationList);
     }
@@ -236,14 +241,16 @@ public class CvService {
         try {
             String jwt = getJwtFromHeader(authHeader);
             long id = jwtTokenProvider.getUserIdFromJWT(jwt);
-            Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+            Optional<User> userOptional = Optional.ofNullable(
+                    userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
             User user = userOptional.get();
             award.setCv(user.getCv());
             awardRepository.save(award);
             userRepository.save(user);
-            //getting the path of the post and append id of the post to the URI
-            URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(award.getId()).toUri();
-            //returns the location of the created post
+            // getting the path of the post and append id of the post to the URI
+            URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(award.getId())
+                    .toUri();
+            // returns the location of the created post
             return ResponseEntity.created(location).build();
         } catch (Exception e) {
             message = "Could not upload!";
@@ -255,7 +262,8 @@ public class CvService {
         String jwt = getJwtFromHeader(authHeader);
         long id = jwtTokenProvider.getUserIdFromJWT(jwt);
         User user = userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist"));
-        //List<Experience> experienceList = experienceRepository.findAllByCv(user.getCv());
+        // List<Experience> experienceList =
+        // experienceRepository.findAllByCv(user.getCv());
         List<Award> awardList = user.getCv().getAwards();
         return ResponseEntity.status(HttpStatus.OK).body(awardList);
     }
@@ -269,7 +277,8 @@ public class CvService {
         try {
             String jwt = getJwtFromHeader(authHeader);
             long id = jwtTokenProvider.getUserIdFromJWT(jwt);
-            Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+            Optional<User> userOptional = Optional.ofNullable(
+                    userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
             User user = userOptional.get();
             return ResponseEntity.ok(user.getCv());
         } catch (Exception e) {
@@ -280,7 +289,8 @@ public class CvService {
 
     public ResponseEntity<?> getCvById(long id) {
         try {
-            Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+            Optional<User> userOptional = Optional.ofNullable(
+                    userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
             User user = userOptional.get();
             return ResponseEntity.status(HttpStatus.OK).body(user);
         } catch (Exception e) {
@@ -289,20 +299,21 @@ public class CvService {
         }
     }
 
-
     public ResponseEntity<?> uploadDevLanguage(DevLanguage devLanguage, String authHeader) {
         String message = devLanguage.toString();
         try {
             String jwt = getJwtFromHeader(authHeader);
             long id = jwtTokenProvider.getUserIdFromJWT(jwt);
-            Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+            Optional<User> userOptional = Optional.ofNullable(
+                    userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
             User user = userOptional.get();
             devLanguage.setCv(user.getCv());
             devLanguageRepository.save(devLanguage);
             userRepository.save(user);
-            //getting the path of the post and append id of the post to the URI
-            URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(devLanguage.getId()).toUri();
-            //returns the location of the created post
+            // getting the path of the post and append id of the post to the URI
+            URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                    .buildAndExpand(devLanguage.getId()).toUri();
+            // returns the location of the created post
             return ResponseEntity.created(location).build();
         } catch (Exception e) {
             message = "Could not upload!";
@@ -328,14 +339,16 @@ public class CvService {
         try {
             String jwt = getJwtFromHeader(authHeader);
             long id = jwtTokenProvider.getUserIdFromJWT(jwt);
-            Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+            Optional<User> userOptional = Optional.ofNullable(
+                    userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
             User user = userOptional.get();
             normalLanguage.setCv(user.getCv());
             normalLanguageRepository.save(normalLanguage);
             userRepository.save(user);
-            //getting the path of the post and append id of the post to the URI
-            URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(normalLanguage.getId()).toUri();
-            //returns the location of the created post
+            // getting the path of the post and append id of the post to the URI
+            URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                    .buildAndExpand(normalLanguage.getId()).toUri();
+            // returns the location of the created post
             return ResponseEntity.created(location).build();
         } catch (Exception e) {
             message = "Could not upload!";
@@ -361,14 +374,16 @@ public class CvService {
         try {
             String jwt = getJwtFromHeader(authHeader);
             long id = jwtTokenProvider.getUserIdFromJWT(jwt);
-            Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+            Optional<User> userOptional = Optional.ofNullable(
+                    userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
             User user = userOptional.get();
             software.setCv(user.getCv());
             softwareRepository.save(software);
             userRepository.save(user);
-            //getting the path of the post and append id of the post to the URI
-            URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(software.getId()).toUri();
-            //returns the location of the created post
+            // getting the path of the post and append id of the post to the URI
+            URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                    .buildAndExpand(software.getId()).toUri();
+            // returns the location of the created post
             return ResponseEntity.created(location).build();
         } catch (Exception e) {
             message = "Could not upload!";
@@ -399,7 +414,8 @@ public class CvService {
     public ResponseEntity<?> updateAbout(long id, About aboutDetails) {
         String message = "";
         try {
-            Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+            Optional<User> userOptional = Optional.ofNullable(
+                    userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
             User user = userOptional.get();
             About about = user.getCv().getAbout();
             about.setFirstName(aboutDetails.getFirstName());
@@ -421,7 +437,8 @@ public class CvService {
     public ResponseEntity<?> updateExperience(long id, Experience experienceDetails) {
         String message = "";
         try {
-            Experience experience = experienceRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist"));
+            Experience experience = experienceRepository.findById(id)
+                    .orElseThrow(() -> new AppException("User id doesn't exist"));
             experience.setOccupation(experienceDetails.getOccupation());
             experience.setCompany(experienceDetails.getCompany());
             experience.setDateStart(experienceDetails.getDateStart());
@@ -438,7 +455,8 @@ public class CvService {
     public ResponseEntity<?> updateEducation(long id, Education educationDetails) {
         String message = "";
         try {
-            Education education = educationRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist"));
+            Education education = educationRepository.findById(id)
+                    .orElseThrow(() -> new AppException("User id doesn't exist"));
             education.setSchool(educationDetails.getSchool());
             education.setDiploma(educationDetails.getDiploma());
             education.setDateStart(educationDetails.getDateStart());
@@ -455,7 +473,8 @@ public class CvService {
     public ResponseEntity<?> getEducationById(long id) {
         String message = "";
         try {
-            Education education = educationRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist"));
+            Education education = educationRepository.findById(id)
+                    .orElseThrow(() -> new AppException("User id doesn't exist"));
             return ResponseEntity.status(HttpStatus.OK).body(education);
         } catch (Exception e) {
             message = "Could not get experience with id " + id;
@@ -466,7 +485,8 @@ public class CvService {
     public ResponseEntity<?> turnFlag(long id) {
         String message = "";
         try {
-            Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+            Optional<User> userOptional = Optional.ofNullable(
+                    userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
             User user = userOptional.get();
             user.getCv().setFlag(true);
             userRepository.save(user);
@@ -477,13 +497,14 @@ public class CvService {
         }
     }
 
-    //USER SERVICE
+    // USER SERVICE
     public ResponseEntity<?> uploadPost(Post post, String authHeader) {
         String message = "";
         try {
             String jwt = getJwtFromHeader(authHeader);
             long id = jwtTokenProvider.getUserIdFromJWT(jwt);
-            Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+            Optional<User> userOptional = Optional.ofNullable(
+                    userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
             User user = userOptional.get();
             Post newPost = new Post();
             newPost.setOwner(user);
@@ -498,7 +519,7 @@ public class CvService {
             newPost.setRole(post.getRole());
             postRepository.save(newPost);
             userRepository.save(user);
-            //returns the location of the created post
+            // returns the location of the created post
             return ResponseEntity.status(HttpStatus.OK).body(newPost.getId());
         } catch (Exception e) {
             message = "Could not upload!";
@@ -532,7 +553,8 @@ public class CvService {
     }
 
     public ResponseEntity<?> getPostById(long postId) {
-        Optional<Post> postOptional = Optional.ofNullable(postRepository.findById(postId).orElseThrow(() -> new AppException("Post doesn't exist")));
+        Optional<Post> postOptional = Optional
+                .ofNullable(postRepository.findById(postId).orElseThrow(() -> new AppException("Post doesn't exist")));
         Post post = postOptional.get();
         return ResponseEntity.status(HttpStatus.OK).body(post);
     }
@@ -560,10 +582,12 @@ public class CvService {
         try {
             String jwt = getJwtFromHeader(authHeader);
             long id = jwtTokenProvider.getUserIdFromJWT(jwt);
-            Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+            Optional<User> userOptional = Optional.ofNullable(
+                    userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
             User user = userOptional.get();
             Comment newComment = new Comment();
-            Optional<Post> postOptional = Optional.ofNullable(postRepository.findById(postId).orElseThrow(() -> new AppException("Post doesn't exist")));
+            Optional<Post> postOptional = Optional.ofNullable(
+                    postRepository.findById(postId).orElseThrow(() -> new AppException("Post doesn't exist")));
             Post post = postOptional.get();
 
             User postOwner = post.getOwner();
@@ -584,7 +608,8 @@ public class CvService {
                 notification.setMessage("has commented on your post");
                 notification.setStatus(false);
                 notification.setOwner(postOwner);
-                notification.setOwnerName(user.getCv().getAbout().getFirstName() + " " + user.getCv().getAbout().getLastName());
+                notification.setOwnerName(
+                        user.getCv().getAbout().getFirstName() + " " + user.getCv().getAbout().getLastName());
                 notification.setOwnersId(user.getId());
                 notification.setOwnerUsername(user.getUsername());
                 notification.setPostId(postId);
@@ -593,7 +618,7 @@ public class CvService {
             }
             commentRepository.save(newComment);
             userRepository.save(user);
-            //returns the location of the created post
+            // returns the location of the created post
             return ResponseEntity.status(HttpStatus.OK).body(newComment);
         } catch (Exception e) {
             message = "Could not upload!";
@@ -609,7 +634,8 @@ public class CvService {
     public ResponseEntity<?> updateComment(long id, Comment commentDetails) {
         String message = "";
         try {
-            Comment comment = commentRepository.findById(id).orElseThrow(() -> new AppException("Comment doesn't exist"));
+            Comment comment = commentRepository.findById(id)
+                    .orElseThrow(() -> new AppException("Comment doesn't exist"));
             comment.setMessage(commentDetails.getMessage());
             Comment updatedComment = commentRepository.save(comment);
             return ResponseEntity.status(HttpStatus.OK).body(updatedComment);
@@ -622,7 +648,8 @@ public class CvService {
     public ResponseEntity<?> priveCv(long id) {
         String message = "";
         try {
-            Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+            Optional<User> userOptional = Optional.ofNullable(
+                    userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
             User user = userOptional.get();
             user.getCv().setPrive(true);
             userRepository.save(user);
@@ -636,7 +663,8 @@ public class CvService {
     public ResponseEntity<?> unpriveCv(long id) {
         String message = "";
         try {
-            Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+            Optional<User> userOptional = Optional.ofNullable(
+                    userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
             User user = userOptional.get();
             user.getCv().setPrive(false);
             userRepository.save(user);
@@ -648,9 +676,10 @@ public class CvService {
     }
 
     public ResponseEntity<?> likeComment(long commentId, long id) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new AppException("Comment doesn't exist"));
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new AppException("Comment doesn't exist"));
         List<Like> likeList = comment.getLikes();
-        for (Like e : likeList) { //just in case
+        for (Like e : likeList) { // just in case
             if (e.getLikerId() == id) {
                 return ResponseEntity.status(HttpStatus.OK).body(comment);
             }
@@ -659,7 +688,8 @@ public class CvService {
         like.setLikerId(id);
         like.setComment(comment);
         User postOwner = comment.getOwner();
-        Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+        Optional<User> userOptional = Optional
+                .ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
         User user = userOptional.get();
         long postId = comment.getPostsId();
         if (postOwner.getId() != user.getId()) {
@@ -668,7 +698,8 @@ public class CvService {
             notification.setStatus(false);
             notification.setOwner(postOwner);
             if (user.getRoles().iterator().next().getId() == 1) {
-                notification.setOwnerName(user.getCv().getAbout().getFirstName() + " " + user.getCv().getAbout().getLastName());
+                notification.setOwnerName(
+                        user.getCv().getAbout().getFirstName() + " " + user.getCv().getAbout().getLastName());
                 notification.setOwnersId(user.getId());
                 notification.setOwnerUsername(user.getUsername());
                 notification.setPostId(postId);
@@ -689,9 +720,10 @@ public class CvService {
     public ResponseEntity<?> unlikeComment(long commentId, String authHeader) {
         String jwt = getJwtFromHeader(authHeader);
         long id = jwtTokenProvider.getUserIdFromJWT(jwt);
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new AppException("Comment doesn't exist"));
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new AppException("Comment doesn't exist"));
         List<Like> likeList = comment.getLikes();
-        for (Like e : likeList) { //just in case
+        for (Like e : likeList) { // just in case
             if (e.getLikerId() == id) {
                 likeRepository.deleteById(e.getId());
             }
@@ -704,7 +736,7 @@ public class CvService {
         long id = jwtTokenProvider.getUserIdFromJWT(jwt);
         Post post = postRepository.findById(postId).orElseThrow(() -> new AppException("Comment doesn't exist"));
         List<Like> likeList = post.getLikes();
-        for (Like e : likeList) { //just in case
+        for (Like e : likeList) { // just in case
             if (e.getLikerId() == id) {
                 likeRepository.deleteById(e.getId());
             }
@@ -712,17 +744,17 @@ public class CvService {
         return ResponseEntity.status(HttpStatus.OK).body("Deleted successfuly");
     }
 
-
     public ResponseEntity<?> likePost(long postId, long id) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new AppException("Comment doesn't exist"));
         List<Like> likeList = post.getLikes();
-        for (Like e : likeList) { //just in case
+        for (Like e : likeList) { // just in case
             if (e.getLikerId() == id) {
                 return ResponseEntity.status(HttpStatus.OK).body(post);
             }
         }
         User postOwner = post.getOwner();
-        Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+        Optional<User> userOptional = Optional
+                .ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
         User user = userOptional.get();
         Like like = new Like();
         like.setLikerId(id);
@@ -733,7 +765,8 @@ public class CvService {
             notification.setStatus(false);
             notification.setOwner(postOwner);
             if (user.getRoles().iterator().next().getId() == 1) {
-                notification.setOwnerName(user.getCv().getAbout().getFirstName() + " " + user.getCv().getAbout().getLastName());
+                notification.setOwnerName(
+                        user.getCv().getAbout().getFirstName() + " " + user.getCv().getAbout().getLastName());
                 notification.setOwnersId(user.getId());
                 notification.setOwnerUsername(user.getUsername());
                 notification.setPostId(postId);
@@ -754,7 +787,8 @@ public class CvService {
     public ResponseEntity<?> getComments(long postId) {
         String message = "";
         try {
-            Optional<Post> postOptional = Optional.ofNullable(postRepository.findById(postId).orElseThrow(() -> new AppException("Post doesn't exist")));
+            Optional<Post> postOptional = Optional.ofNullable(
+                    postRepository.findById(postId).orElseThrow(() -> new AppException("Post doesn't exist")));
             Post post = postOptional.get();
             List<Comment> commentList = post.getComment();
             return ResponseEntity.status(HttpStatus.OK).body(commentList);
@@ -770,7 +804,8 @@ public class CvService {
     }
 
     public ResponseEntity<?> getLikesByPost(long postId) {
-        Optional<Post> postOptional = Optional.ofNullable(postRepository.findById(postId).orElseThrow(() -> new AppException("Post doesn't exist")));
+        Optional<Post> postOptional = Optional
+                .ofNullable(postRepository.findById(postId).orElseThrow(() -> new AppException("Post doesn't exist")));
         Post post = postOptional.get();
         List<Like> likeList = likeRepository.findAllByPost(post);
         return ResponseEntity.status(HttpStatus.OK).body(likeList);
@@ -779,14 +814,14 @@ public class CvService {
     public ResponseEntity<?> enableAccount(long id) {
         String message = "";
         try {
-            Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+            Optional<User> userOptional = Optional.ofNullable(
+                    userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
             User user = userOptional.get();
             user.setEnabled(true);
             userRepository.save(user);
-            mailService.sendEmail(new NotificationEmail("Your account has been enabled",
-                    user.getEmail(), "Activate user," + user.getUsername() + ", " + user.getEmail() +
-                    "by clicking here :\n" +
-                    "<a href=\"http://localhost:3000/login" + "\">Login</a>"));
+            mailService.sendEmail(new NotificationEmail("Your account has been enabled", user.getEmail(),
+                    "Activate user," + user.getUsername() + ", " + user.getEmail() + "by clicking here :\n"
+                            + "<a href=\"http://localhost:3000/login" + "\">Login</a>"));
             return ResponseEntity.status(HttpStatus.OK).body(user);
         } catch (Exception e) {
             message = "Couldn't!";
@@ -797,14 +832,14 @@ public class CvService {
     public ResponseEntity<?> getAllStudents() {
         try {
             List<User> users = userRepository.findAll();
-            users = users.stream().filter(user -> user.getRoles().iterator().next().getId() == 1).collect(Collectors.toList());
+            users = users.stream().filter(user -> user.getRoles().iterator().next().getId() == 1)
+                    .collect(Collectors.toList());
             return ResponseEntity.status(HttpStatus.OK).body(users);
         } catch (Exception e) {
             String message = "Error!";
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
         }
     }
-
 
     private String getJwtFromHeader(String authHeader) {
         if (StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")) {
