@@ -4,11 +4,11 @@
 
 ## Server app for developpment environment
 
-`mvn spring-boot:run -Denv=dev`
+`mvn spring-boot:run `
 
 ### Build project for development environment
 
-`mvn clean package spring-boot:repackage -Denv=dev`
+`mvn clean package spring-boot:repackage `
 
 ### Build project for production environment
 

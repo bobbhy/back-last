@@ -23,73 +23,67 @@ import java.util.Set;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "users", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {
-                "username"
-        }),
-        @UniqueConstraint(columnNames = {
-                "email"
-        })
-})
+@Table(name = "users", uniqueConstraints = { @UniqueConstraint(columnNames = { "username" }),
+                @UniqueConstraint(columnNames = { "email" }) })
 public class User extends DateAudit {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
 
-    @NotBlank
-    @Size(max = 40)
-    private String name;
+        @NotBlank
+        @Size(max = 40)
+        private String name;
 
-    @Size(max = 40)
-    private String companyName;
+        @Size(max = 40)
+        private String companyName;
 
-    @NotBlank(message = "username must not be blank")
-    @Size(max = 15)
-    private String username;
+        @NotBlank(message = "username must not be blank")
+        @Size(max = 15)
+        private String username;
 
-    @NaturalId
-    @NotBlank
-    @Size(max = 40)
-    @Email
-    private String email;
+        @NaturalId
+        @NotBlank
+        @Size(max = 40)
+        @Email
+        private String email;
 
-    @NotBlank(message = "Password must not be black")
-    @JsonIgnore
-    @Size(max = 100, min = 6, message = "Password must be between 6 and 100 characters")
-    private String password;
+        @NotBlank(message = "Password must not be black")
+        @JsonIgnore
+        @Size(max = 100, min = 6, message = "Password must be between 6 and 100 characters")
+        private String password;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles = new HashSet<>();
-    private Boolean enabled;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "cv_id", referencedColumnName = "id")
-    private Cv cv;
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name="etablishment_id",referencedColumnName = "id")
-    private Etablishment etablishment;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "comp_id", referencedColumnName = "id")
-    private Company company;
-    @OneToMany(orphanRemoval=true,mappedBy = "owner")
-    private List<Post> posts;
-    @OneToMany(orphanRemoval=true,  mappedBy = "owner")
-    @JsonIgnore
-    private List<Comment> comments;
-    @OneToMany(orphanRemoval=true,mappedBy = "owner")
-    private List<Notification> notifications ;
-    @OneToMany(orphanRemoval=true,mappedBy = "sender")
-    private List<Friendship> friendshipSended;
-    @OneToMany(orphanRemoval=true,mappedBy = "receiver")
-    private List<Friendship> friendshipReceived;
-    public User(String name, String companyName, String username, String email, String password) {
-        this.name = name;
-        this.companyName = companyName;
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.enabled = false;
-    }
+        @ManyToMany(fetch = FetchType.LAZY)
+        @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+        private Set<Role> roles = new HashSet<>();
+        private Boolean enabled;
+        @OneToOne(cascade = CascadeType.ALL)
+        @JoinColumn(name = "cv_id", referencedColumnName = "id")
+        private Cv cv;
+        @ManyToOne(cascade = CascadeType.ALL)
+        @JoinColumn(name = "etablishment_id", referencedColumnName = "id")
+        private Etablishment etablishment;
+        @OneToOne(cascade = CascadeType.ALL)
+        @JoinColumn(name = "comp_id", referencedColumnName = "id")
+        private Company company;
+        @OneToMany(orphanRemoval = true, mappedBy = "owner")
+        private List<Post> posts;
+        @OneToMany(orphanRemoval = true, mappedBy = "owner")
+        @JsonIgnore
+        private List<Comment> comments;
+        @OneToMany(orphanRemoval = true, mappedBy = "owner")
+        private List<Notification> notifications;
+        @OneToMany(orphanRemoval = true, mappedBy = "sender")
+        private List<Friendship> friendshipSended;
+        @OneToMany(orphanRemoval = true, mappedBy = "receiver")
+        private List<Friendship> friendshipReceived;
+
+        public User(String name, String companyName, String username, String email, String password) {
+                this.name = name;
+                this.companyName = companyName;
+                this.username = username;
+                this.email = email;
+                this.password = password;
+                this.setEnabled(false);
+        }
+
 }
