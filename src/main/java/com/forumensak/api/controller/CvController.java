@@ -48,6 +48,10 @@ public class CvController {
         return cvService.getImage(authHeader);
     }
 
+    @GetMapping("/about")
+    public ResponseEntity<?> getAbbout(@RequestHeader("Authorization") String authHeader) {
+        return cvService.getAbbout(authHeader);
+    }
     @PostMapping("/about")
     public ResponseEntity<?> uploadAbout(@RequestBody About about, @RequestHeader("Authorization") String authHeader) {
         return cvService.uploadAbout(about, authHeader);

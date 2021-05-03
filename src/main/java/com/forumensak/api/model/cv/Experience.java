@@ -21,6 +21,7 @@ public class Experience {
     private String dateStart;
     private String dateEnd;
     private String description;
+    private boolean isProject;
     @ManyToOne(fetch=FetchType.LAZY)
     @JsonIgnore
     private Cv cv;

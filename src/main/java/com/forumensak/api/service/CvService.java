@@ -127,6 +127,8 @@ public class CvService {
         }
     }
 
+
+
     public ResponseEntity<?> uploadAbout(About about, String authHeader) {
         String message = "";
         try {
@@ -401,7 +403,7 @@ public class CvService {
 
     public ResponseEntity<?> deleteSoftware(long id) {
         softwareRepository.deleteById(id);
-        return ResponseEntity.status(HttpStatus.OK).body("Deleted successfuly");
+        return ResponseEntity.status(HttpStatus.OK).body("Error");
     }
 
     public List<About> listAll(String keyword) {
@@ -409,6 +411,16 @@ public class CvService {
             return aboutRepository.search(keyword);
         }
         return aboutRepository.findAll();
+    }
+
+    public ResponseEntity<?> getAbbout(String authHeader) {
+        String jwt = getJwtFromHeader(authHeader);
+        long id = jwtTokenProvider.getUserIdFromJWT(jwt);
+        Optional<User> userOptional = Optional.ofNullable(
+                userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+        User user = userOptional.get();
+        return ResponseEntity.status(HttpStatus.OK).body(user.getCv().getAbout());
+
     }
 
     public ResponseEntity<?> updateAbout(long id, About aboutDetails) {
