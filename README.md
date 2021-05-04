@@ -1,14 +1,10 @@
-## Install dependencies
-
-`mvn install`
-
 ## Server app for developpment environment
 
-`mvn spring-boot:run `
+`mvn spring-boot:run -Denv=dev`
 
 ### Build project for development environment
 
-`mvn clean package spring-boot:repackage `
+`mvn clean package spring-boot:repackage Denv=dev`
 
 ### Build project for production environment
 

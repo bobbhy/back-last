@@ -47,7 +47,9 @@ public class ProfileService {
     }
 
     public ResponseEntity<?> searchUsers(String var) {
-        List<User> users = userRepository.findByNameIgnoreCaseContainingOrUsernameIgnoreCaseContainingOrCompanyNameIgnoreCaseContaining(var, var, var);
+        List<User> users = userRepository
+                .findByNameIgnoreCaseContainingOrUsernameIgnoreCaseContainingOrCompanyNameIgnoreCaseContaining(var, var,
+                        var);
         return ResponseEntity.ok(users);
     }
 
@@ -62,7 +64,8 @@ public class ProfileService {
             String jwt = getJwtFromHeader(authHeader);
             long id1 = jwtTokenProvider.getUserIdFromJWT(jwt);
             User userMe = userRepository.findById(id1).orElseThrow(() -> new AppException("User Me id doesn't exist"));
-            User userOther = userRepository.findById(id).orElseThrow(() -> new AppException("User Other id doesn't exist"));
+            User userOther = userRepository.findById(id)
+                    .orElseThrow(() -> new AppException("User Other id doesn't exist"));
             Friendship friendship = new Friendship();
             friendship.setSender(userMe);
             friendship.setReceiver(userOther);
@@ -73,7 +76,8 @@ public class ProfileService {
             notification.setStatus(false);
             notification.setOwner(userOther);
             if (userMe.getRoles().iterator().next().getId() == 1) {
-                notification.setOwnerName(userMe.getCv().getAbout().getFirstName() + " " + userMe.getCv().getAbout().getLastName());
+                notification.setOwnerName(
+                        userMe.getCv().getAbout().getFirstName() + " " + userMe.getCv().getAbout().getLastName());
                 notification.setOwnersId(userMe.getId());
                 notification.setOwnerUsername(userMe.getUsername());
                 notification.setOwnerImage(userMe.getCv().getImage());
@@ -104,19 +108,26 @@ public class ProfileService {
             System.out.println(id);
             System.out.println(id1);
             User userMe = userRepository.findById(id1).orElseThrow(() -> new AppException("User Me id doesn't exist"));
-            User userOther = userRepository.findById(id).orElseThrow(() -> new AppException("User Other id doesn't exist"));
-            Friendship friendship1 = userOther.getFriendshipSended().stream().filter(friendship -> friendship.getId().getSenderId().equals(id)).collect(Collectors.toList()).get(0);
+            User userOther = userRepository.findById(id)
+                    .orElseThrow(() -> new AppException("User Other id doesn't exist"));
+            Friendship friendship1 = userOther.getFriendshipSended().stream()
+                    .filter(friendship -> friendship.getId().getSenderId().equals(id)
+                            && friendship.getId().getReceiverId().equals(id1))
+                    .collect(Collectors.toList()).get(0);
             friendship1.setStatus(true);
-            System.out.println(friendship1.isStatus());
             friendship1.setConversation(new Conversation());
-            Notification notification1 = userMe.getNotifications().stream().filter(notification -> notification.getOwner().getId().equals(id1) && notification.getOwnersId() == id && !notification.isStatus()).collect(Collectors.toList()).get(0);
+            Notification notification1 = userMe.getNotifications().stream()
+                    .filter(notification -> notification.getOwner().getId().equals(id1)
+                            && notification.getOwnersId() == id && !notification.isStatus())
+                    .collect(Collectors.toList()).get(0);
             notification1.setStatus(true);
             Notification notification = new Notification();
             notification.setMessage("Accepted your connection");
             notification.setStatus(false);
             notification.setOwner(userOther);
             if (userMe.getRoles().iterator().next().getId() == 1) {
-                notification.setOwnerName(userMe.getCv().getAbout().getFirstName() + " " + userMe.getCv().getAbout().getLastName());
+                notification.setOwnerName(
+                        userMe.getCv().getAbout().getFirstName() + " " + userMe.getCv().getAbout().getLastName());
                 notification.setOwnersId(userMe.getId());
                 notification.setOwnerUsername(userMe.getUsername());
                 notification.setOwnerImage(userMe.getCv().getImage());
@@ -146,7 +157,8 @@ public class ProfileService {
             long id = jwtTokenProvider.getUserIdFromJWT(jwt);
             User user = userRepository.findById(id).orElseThrow(() -> new AppException("User Me id doesn't exist"));
             user.getNotifications().stream().forEach(notification -> {
-                if (notification.getMessage().equals("Accepted your connection") || notification.getMessage().equals("Disconnected with you")) {
+                if (notification.getMessage().equals("Accepted your connection")
+                        || notification.getMessage().equals("Disconnected with you")) {
                     notification.setStatus(true);
                 }
             });
@@ -157,30 +169,34 @@ public class ProfileService {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(e.getMessage()));
         }
     }
+
     public ResponseEntity<?> handleNotification(Long id) {
-        String message="";
+        String message = "";
         try {
-            Notification notification=notificationRepository.findById(id).orElseThrow(()->new AppException("Notif not found"));
+            Notification notification = notificationRepository.findById(id)
+                    .orElseThrow(() -> new AppException("Notif not found"));
             notification.setStatus(true);
             notificationRepository.save(notification);
             return ResponseEntity.ok("Success");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             message = "Error";
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(e.getMessage()));
         }
     }
+
     public ResponseEntity<?> disconnect(String authHeader, long id) {
         String message = "";
         try {
             String jwt = getJwtFromHeader(authHeader);
             long id1 = jwtTokenProvider.getUserIdFromJWT(jwt);
             User userMe = userRepository.findById(id1).orElseThrow(() -> new AppException("User Me id doesn't exist"));
-            User userOther = userRepository.findById(id).orElseThrow(() -> new AppException("User Other id doesn't exist"));
+            User userOther = userRepository.findById(id)
+                    .orElseThrow(() -> new AppException("User Other id doesn't exist"));
             Friendship friendship = friendShipRepository.findByIdSenderIdAndIdReceiverId(id, id1);
             if (friendship == null) {
                 friendship = friendShipRepository.findByIdSenderIdAndIdReceiverId(id1, id);
-                if (friendship == null) return ResponseEntity.ok("Friendship not found");
+                if (friendship == null)
+                    return ResponseEntity.ok("Friendship not found");
             }
             friendShipRepository.delete(friendship);
             Notification notification = new Notification();
@@ -188,7 +204,8 @@ public class ProfileService {
             notification.setStatus(false);
             notification.setOwner(userOther);
             if (userMe.getRoles().iterator().next().getId() == 1) {
-                notification.setOwnerName(userMe.getCv().getAbout().getFirstName() + " " + userMe.getCv().getAbout().getLastName());
+                notification.setOwnerName(
+                        userMe.getCv().getAbout().getFirstName() + " " + userMe.getCv().getAbout().getLastName());
                 notification.setOwnersId(userMe.getId());
                 notification.setOwnerUsername(userMe.getUsername());
                 notification.setOwnerImage(userMe.getCv().getImage());
@@ -209,7 +226,8 @@ public class ProfileService {
     }
 
     public ResponseEntity<?> deleteNotification(long id) {
-        Notification notification = notificationRepository.findById(id).orElseThrow(() -> new AppException("Notification doesn't exist"));
+        Notification notification = notificationRepository.findById(id)
+                .orElseThrow(() -> new AppException("Notification doesn't exist"));
         notificationRepository.delete(notification);
         return ResponseEntity.ok("Success");
     }
@@ -240,7 +258,8 @@ public class ProfileService {
                     conversationPayload.setId(user.getId());
                     if (user.getRoles().iterator().next().getId() == 1) {
                         conversationPayload.setImg(user.getCv().getImage());
-                        conversationPayload.setUsername(user.getCv().getAbout().getFirstName() + " " + user.getCv().getAbout().getLastName());
+                        conversationPayload.setUsername(
+                                user.getCv().getAbout().getFirstName() + " " + user.getCv().getAbout().getLastName());
                     } else if (user.getRoles().iterator().next().getId() == 3) {
                         conversationPayload.setImg(user.getCompany().getCompanyImage());
                         conversationPayload.setUsername(user.getCompany().getAboutCompany().getName());
@@ -254,7 +273,8 @@ public class ProfileService {
                     } else {
                         Collections.reverse(friendship.getConversation().getMessageList());
                         conversationPayload.setLastMessage(friendship.getConversation().getMessageList().get(0));
-                        conversationPayload.setDate(Timestamp.from(friendship.getConversation().getMessageList().get(0).getUpdatedAt()));
+                        conversationPayload.setDate(
+                                Timestamp.from(friendship.getConversation().getMessageList().get(0).getUpdatedAt()));
                         conversationPayloadList.add(conversationPayload);
                     }
                 }
@@ -272,10 +292,13 @@ public class ProfileService {
         try {
             String jwt = getJwtFromHeader(authHeader);
             long senderId = jwtTokenProvider.getUserIdFromJWT(jwt);
-            Friendship friendship = friendShipRepository.findByIdSenderIdAndIdReceiverId(senderId, messagePayload.getReceiverId());
+            Friendship friendship = friendShipRepository.findByIdSenderIdAndIdReceiverId(senderId,
+                    messagePayload.getReceiverId());
             if (friendship == null) {
-                friendship = friendShipRepository.findByIdSenderIdAndIdReceiverId(messagePayload.getReceiverId(), senderId);
-                if (friendship == null) return ResponseEntity.ok("Friendship not found");
+                friendship = friendShipRepository.findByIdSenderIdAndIdReceiverId(messagePayload.getReceiverId(),
+                        senderId);
+                if (friendship == null)
+                    return ResponseEntity.ok("Friendship not found");
             }
             Message message1 = new Message();
             message1.setSenderId(senderId);
@@ -291,14 +314,13 @@ public class ProfileService {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(e.getMessage()));
         }
     }
-    public ResponseEntity<?> getAllEtablishment()
-    {
-        String message="";
+
+    public ResponseEntity<?> getAllEtablishment() {
+        String message = "";
         try {
             return ResponseEntity.ok(etablishementRepository.findAll());
-        }catch (Exception e)
-        {
-            message="Error";
+        } catch (Exception e) {
+            message = "Error";
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(e.getMessage()));
         }
     }
@@ -316,7 +338,6 @@ public class ProfileService {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(e.getMessage()));
         }
 
-
     }
 
     public ResponseEntity<?> getMessages(String authHeader, Long id) {
@@ -327,7 +348,8 @@ public class ProfileService {
             Friendship friendship = friendShipRepository.findByIdSenderIdAndIdReceiverId(id1, id);
             if (friendship == null) {
                 friendship = friendShipRepository.findByIdSenderIdAndIdReceiverId(id, id1);
-                if (friendship == null) return ResponseEntity.ok("Friendship not found");
+                if (friendship == null)
+                    return ResponseEntity.ok("Friendship not found");
             }
             Collections.reverse(friendship.getConversation().getMessageList());
             return ResponseEntity.ok(friendship.getConversation().getMessageList());
@@ -337,4 +359,3 @@ public class ProfileService {
         }
     }
 }
-
