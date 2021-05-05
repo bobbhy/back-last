@@ -4,13 +4,27 @@
 
 ### Build project for development environment
 
-`mvn clean package spring-boot:repackage Denv=dev`
+`mvn clean package spring-boot:repackage -Denv=dev`
 
 ### Build project for production environment
 
 `mvn clean package spring-boot:repackage -Denv=prod`
 
+### Move .jar to ubuntu server
+
+`scp -i utils/Saad1234 target/polls-0.0.1-SNAPSHOT.jar root@134.122.94.140:.`
+
+### Run .jar in background
+
+`nohup java -jar polls-0.0.1-SNAPSHOT.jar & `
+
+### Show important processes in term of memory
+
+`ps -eo pid,ppid,cmd,%mem,%cpu --sort=-%mem | head`
+
 ### Digitalocean setup instructions (w/ docker)
+
+nohup java -jar polls-0.0.1-SNAPSHOT.jar &
 
 ```shell
 

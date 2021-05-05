@@ -56,17 +56,14 @@ public class AuthService {
     private String front;
 
     public ResponseEntity<?> signIn(SignInRequest signInRequest) {
-        if (!userRepository.findByUsernameOrEmail(signInRequest.getUsernameOrEmail(), signInRequest.getUsernameOrEmail()).get().getEnabled()) {
-            return new ResponseEntity(new ApiResponse(false, "Enable your account first!"),
-                    HttpStatus.UNAUTHORIZED);
+        if (!userRepository
+                .findByUsernameOrEmail(signInRequest.getUsernameOrEmail(), signInRequest.getUsernameOrEmail()).get()
+                .getEnabled()) {
+            return new ResponseEntity(new ApiResponse(false, "Enable your account first!"), HttpStatus.UNAUTHORIZED);
         }
         try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            signInRequest.getUsernameOrEmail(),
-                            signInRequest.getPassword()
-                    )
-            );
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                    signInRequest.getUsernameOrEmail(), signInRequest.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             String jwt = tokenProvider.generateToken(authentication);
@@ -78,13 +75,11 @@ public class AuthService {
 
     public ResponseEntity<?> signUp(SignUpRequest signUpRequest, long roleId) {
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-            return new ResponseEntity(new ApiResponse(false, "Username is already taken!"),
-                    HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new ApiResponse(false, "Username is already taken!"), HttpStatus.BAD_REQUEST);
         }
 
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            return new ResponseEntity(new ApiResponse(false, "Email Address already in use!"),
-                    HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new ApiResponse(false, "Email Address already in use!"), HttpStatus.BAD_REQUEST);
         }
 
         // Creating user's account
@@ -93,18 +88,15 @@ public class AuthService {
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        Role userRole = roleRepository.findById(roleId)
-                .orElseThrow(() -> new AppException("User Role not set."));
+        Role userRole = roleRepository.findById(roleId).orElseThrow(() -> new AppException("User Role not set."));
 
         user.setRoles(Collections.singleton(userRole));
         user.setEnabled(false);
         if (userRole.getId() == 1) {
-//            if(!signUpRequest.getCompanyName().endsWith("@uit.ac.ma"))
-//            {
-//                return new ResponseEntity(new ApiResponse(false, "Use your university mail"),
-//                        HttpStatus.BAD_REQUEST);
-//            }
-            Etablishment etablishment=etablishementRepository.getById(signUpRequest.getEtablishment_id());
+            if (!signUpRequest.getEmail().endsWith("@uit.ac.ma")) {
+                return new ResponseEntity(new ApiResponse(false, "Use your university mail"), HttpStatus.BAD_REQUEST);
+            }
+            Etablishment etablishment = etablishementRepository.getById(signUpRequest.getEtablishment_id());
             user.setEtablishment(etablishment);
             user.setCv(new Cv());
             user.getCv().setFlag(false);
@@ -114,46 +106,38 @@ public class AuthService {
             user.setCompany(new Company());
             user.getCompany().setFlag(false);
             user.getCompany().setAboutCompany(new AboutCompany());
-        }
-        else if(userRole.getId() == 2){
+        } else if (userRole.getId() == 2) {
             user.setEnabled(true);
         }
         User result = userRepository.save(user);
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath().path("/api/users/{username}")
+        URI location = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/users/{username}")
                 .buildAndExpand(result.getUsername()).toUri();
-        //Generate token
+        // Generate token
         String token = generateVerificationToken(user);
         if (userRole.getId() == 1) {
-            mailService.sendEmail(new NotificationEmail("Please activate your account",
-                    user.getEmail(), "Thank you for signing up to forum ensak," +
-                    "please click on the below url to activate your account :\n" +
-                    "<a href=\""+front+"/confirm?token=" + token + "\">Validate</a>"));
+            mailService.sendEmail(new NotificationEmail("Please activate your account", user.getEmail(),
+                    "Thank you for signing up to forum ensak,"
+                            + "please click on the below url to activate your account :\n" + "<a href=\"" + front
+                            + "/confirm?token=" + token + "\">Validate</a>"));
         }
         if (userRole.getId() == 3) {
             mailService.sendEmail(new NotificationEmail("Activate accout for enterprise manager",
-                    "aymane.elmouhtarim@gmail.com", "Activate user," +user.getUsername()+", "+ user.getEmail() +
-                    "by clicking here :\n" +
-                    "<a href=\""+front+"/admin"+"\">Check it out</a>"));
+                    "aymane.elmouhtarim@gmail.com", "Activate user," + user.getUsername() + ", " + user.getEmail()
+                            + "by clicking here :\n" + "<a href=\"" + front + "/admin" + "\">Check it out</a>"));
         }
 
-        return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully, Please enable your account through your mail box"));
+        return ResponseEntity.created(location).body(new ApiResponse(true,
+                "User registered successfully, Please enable your account through your mail box"));
     }
+
     public ResponseEntity<?> verifyAccount(String token) {
         Optional<VerificationToken> verificationToken = verificationTokenRepository.findByToken(token);
         verificationToken.orElseThrow(() -> new AppException("Invalid Token"));
-        User user=fetchUserAndEnable(verificationToken.get());
-        List<GrantedAuthority> authorities = user.getRoles().stream().map(role ->
-                new SimpleGrantedAuthority(role.getName().name())
-        ).collect(Collectors.toList());
-        Authentication authentication = new UsernamePasswordAuthenticationToken(new UserPrincipal(
-                user.getId(),
-                user.getName(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getPassword(),
-                authorities
-        ),null);
+        User user = fetchUserAndEnable(verificationToken.get());
+        List<GrantedAuthority> authorities = user.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName().name())).collect(Collectors.toList());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(new UserPrincipal(user.getId(),
+                user.getName(), user.getUsername(), user.getEmail(), user.getPassword(), authorities), null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = tokenProvider.generateToken(authentication);
         return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
@@ -172,15 +156,17 @@ public class AuthService {
     @Transactional
     public User fetchUserAndEnable(VerificationToken verificationToken) {
         String username = verificationToken.getUser().getUsername();
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new BadRequestException("User no longer exist in database"));
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new BadRequestException("User no longer exist in database"));
         user.setEnabled(true);
         userRepository.save(user);
         return user;
 
     }
-    public ResponseEntity<?> deleteUser(Long id)
-    {
-        VerificationToken verificationToken=verificationTokenRepository.findByUserId(id).orElseThrow(()->new AppException("token not found"));
+
+    public ResponseEntity<?> deleteUser(Long id) {
+        VerificationToken verificationToken = verificationTokenRepository.findByUserId(id)
+                .orElseThrow(() -> new AppException("token not found"));
         verificationTokenRepository.delete(verificationToken);
         return ResponseEntity.ok("Success");
     }
