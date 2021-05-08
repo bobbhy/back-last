@@ -133,15 +133,18 @@ public class AuthService {
     public ResponseEntity<?> verifyAccount(String token) {
         Optional<VerificationToken> verificationToken = verificationTokenRepository.findByToken(token);
         verificationToken.orElseThrow(() -> new AppException("Invalid Token"));
-        User user = fetchUserAndEnable(verificationToken.get());
-        List<GrantedAuthority> authorities = user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName().name())).collect(Collectors.toList());
-        Authentication authentication = new UsernamePasswordAuthenticationToken(new UserPrincipal(user.getId(),
-                user.getName(), user.getUsername(), user.getEmail(), user.getPassword(), authorities), null);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = tokenProvider.generateToken(authentication);
-        return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
-
+        if (!verificationToken.get().isExpired()) {
+            User user = fetchUserAndEnable(verificationToken.get());
+            List<GrantedAuthority> authorities = user.getRoles().stream()
+                    .map(role -> new SimpleGrantedAuthority(role.getName().name())).collect(Collectors.toList());
+            Authentication authentication = new UsernamePasswordAuthenticationToken(new UserPrincipal(user.getId(),
+                    user.getName(), user.getUsername(), user.getEmail(), user.getPassword(), authorities), null);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = tokenProvider.generateToken(authentication);
+            return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
+        } else {
+            return ResponseEntity.ok("Token is expired");
+        }
     }
 
     public String generateVerificationToken(User user) {
@@ -149,6 +152,7 @@ public class AuthService {
         VerificationToken verificationToken = new VerificationToken();
         verificationToken.setToken(token);
         verificationToken.setUser(user);
+        verificationToken.setExpired(false);
         verificationTokenRepository.save(verificationToken);
         return token;
     }
@@ -159,6 +163,7 @@ public class AuthService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BadRequestException("User no longer exist in database"));
         user.setEnabled(true);
+        verificationToken.setExpired(true);
         userRepository.save(user);
         return user;
 
