@@ -38,6 +38,11 @@ public class CvController {
         return cvService.uploadImage(file, authHeader);
     }
 
+    @PutMapping("/link")
+    public ResponseEntity<?> uploadLink(@RequestBody Link link,@RequestHeader("Authorization") String authHeader){
+        return cvService.uploadLink(link,authHeader);
+    }
+
     @GetMapping("/image/{id}")
     public ResponseEntity<?> uploadImageById(@PathVariable long id) {
         return cvService.getImageById(id);
@@ -176,6 +181,11 @@ public class CvController {
     @PutMapping("/updateEducation/{id}")
     public ResponseEntity<?> updateEducation(@PathVariable long id, @RequestBody Education educationDetails) {
         return cvService.updateEducation(id, educationDetails);
+    }
+
+    @GetMapping("/link")
+    public ResponseEntity<?> getLinks(@RequestHeader("Authorization") String authHeader){
+        return cvService.getLinks(authHeader);
     }
 
     @GetMapping("/geteducationbyid/{id}")

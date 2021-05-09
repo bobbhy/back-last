@@ -3,6 +3,7 @@ package com.forumensak.api.service;
 import com.forumensak.api.exception.AppException;
 import com.forumensak.api.model.User;
 import com.forumensak.api.model.company.AboutCompany;
+import com.forumensak.api.model.cv.Link;
 import com.forumensak.api.model.social.Comment;
 import com.forumensak.api.model.social.Notification;
 import com.forumensak.api.model.social.Post;
@@ -42,6 +43,8 @@ public class CompanyService {
     CommentRepository commentRepository;
     @Autowired
     NotificationRepository notificationRepository;
+    @Autowired
+    LinkRepository linkRepository;
 
 
     public static String encoder(String imagePath) {
@@ -74,6 +77,41 @@ public class CompanyService {
             return ResponseEntity.status(HttpStatus.OK).body(updatedAbout);
         } catch (Exception e) {
             message = "Could not edit the about section due to a server error!";
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+        }
+    }
+
+    public ResponseEntity<?> uploadCompLink(Link link, String authHeader) {
+        String message = "";
+        boolean k = true;
+        try {
+            String jwt = getJwtFromHeader(authHeader);
+            long linkId = 0;
+            long id = jwtTokenProvider.getUserIdFromJWT(jwt);
+            Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+            User user = userOptional.get();
+            List<Link> linkList = user.getCompany().getLinks();
+            for (Link e : linkList) {
+                if (e.getName().equals(link.getName())) {
+                    linkId = e.getId();
+                    k = false;
+                    break;
+                }
+            }
+            if (k) {
+                link.setCompany(user.getCompany());
+                linkRepository.save(link);
+                userRepository.save(user);
+            } else {
+                Link putLink = linkRepository.findById(linkId)
+                        .orElseThrow(() -> new AppException("User id doesn't exist"));
+                putLink.setUrl(link.getUrl());
+                linkRepository.save(putLink);
+                userRepository.save(user);
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(linkId);
+        } catch (Exception e) {
+            message = "Could not upload!";
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
         }
     }
@@ -130,7 +168,6 @@ public class CompanyService {
             User user = userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist"));
             user.getCompany().getAboutCompany().setName(user.getCompanyName());
             user.getCompany().getAboutCompany().setNumber(aboutCompany.getNumber());
-            user.getCompany().getAboutCompany().setSocials(aboutCompany.getSocials());
             user.getCompany().getAboutCompany().setCity(aboutCompany.getCity());
             user.getCompany().getAboutCompany().setBio(aboutCompany.getBio());
             user.getCompany().getAboutCompany().setAddress(aboutCompany.getAddress());
@@ -144,10 +181,30 @@ public class CompanyService {
         }
     }
 
+    public ResponseEntity<?> getLinks(String authHeader) {
+        String message = "";
+        String jwt = getJwtFromHeader(authHeader);
+        long id = jwtTokenProvider.getUserIdFromJWT(jwt);
+        Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+        User user = userOptional.get();
+        return ResponseEntity.status(HttpStatus.OK).body(user.getCompany().getLinks());
+    }
+
     public ResponseEntity<?> getAllCompanies() {
         try {
             List<User> users = userRepository.findAll();
             users = users.stream().filter(user -> user.getRoles().iterator().next().getId() == 3).collect(Collectors.toList());
+            return ResponseEntity.status(HttpStatus.OK).body(users);
+        } catch (Exception e) {
+            String message = "Error!";
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+        }
+    }
+
+    public ResponseEntity<?> getUnenabledCompanies() {
+        try {
+            List<User> users = userRepository.findAll();
+            users = users.stream().filter(user -> user.getRoles().iterator().next().getId() == 3 && !user.getEnabled()).collect(Collectors.toList());
             return ResponseEntity.status(HttpStatus.OK).body(users);
         } catch (Exception e) {
             String message = "Error!";
@@ -306,6 +363,41 @@ public class CompanyService {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
         }
     }
+
+    public ResponseEntity<?> uploadLink(Link link, String authHeader) {
+        String message = "";
+        try {
+            String jwt = getJwtFromHeader(authHeader);
+            long id = jwtTokenProvider.getUserIdFromJWT(jwt);
+            Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+            User user = userOptional.get();
+            link.setCompany(user.getCompany());
+            linkRepository.save(link);
+            userRepository.save(user);
+            return ResponseEntity.status(HttpStatus.OK).body(link);
+        } catch (Exception e) {
+            message = "Could not upload!";
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+        }
+    }
+
+    public ResponseEntity<?> viewNotification(long ownerId, long viewerId) {
+        User user = userRepository.findById(viewerId).orElseThrow(() -> new AppException("User id doesn't exist"));
+        User owner = userRepository.findById(ownerId).orElseThrow(() -> new AppException("User id doesn't exist"));
+        Notification notification = new Notification();
+        notification.setMessage("has viewed your profile");
+        notification.setStatus(false);
+        notification.setOwner(owner);
+        notification.setOwnerName(user.getCompany().getAboutCompany().getName());
+        notification.setOwnersId(user.getId());
+        notification.setOwnerUsername(user.getUsername());
+        notification.setOwnerImage(user.getCompany().getCompanyImage());
+        notificationRepository.save(notification);
+        userRepository.save(user);
+        userRepository.save(owner);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("hhhh"));
+    }
+
 
     private String getJwtFromHeader(String authHeader) {
         if (StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")) {

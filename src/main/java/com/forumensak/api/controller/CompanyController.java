@@ -2,6 +2,7 @@ package com.forumensak.api.controller;
 
 
 import com.forumensak.api.model.company.AboutCompany;
+import com.forumensak.api.model.cv.Link;
 import com.forumensak.api.model.social.Comment;
 import com.forumensak.api.model.social.Post;
 import com.forumensak.api.service.CompanyService;
@@ -69,6 +70,11 @@ public class CompanyController {
         return companyService.updatePost(id, postDetails);
     }
 
+    @GetMapping("/unenabled")
+    public ResponseEntity<?> getUnenabledCompanies(){
+        return companyService.getUnenabledCompanies();
+    }
+
     @DeleteMapping("/post/{id}")
     public ResponseEntity<?> deletePost(@PathVariable long id) {
         return companyService.deletePost(id);
@@ -79,7 +85,16 @@ public class CompanyController {
         return companyService.uploadComment(postId, comment, authHeader);
     }
 
-    //
+    @PutMapping("/link")
+    public ResponseEntity<?> uploadLink(@RequestBody Link link, @RequestHeader("Authorization") String authHeader){
+        return companyService.uploadCompLink(link,authHeader);
+    }
+
+    @GetMapping("/link")
+    public ResponseEntity<?> getLinks(@RequestHeader("Authorization") String authHeader){
+        return companyService.getLinks(authHeader);
+    }
+
     @PutMapping("/comment/{id}")
     public ResponseEntity<?> updateComment(@PathVariable long id, @RequestBody Comment commentDetails) {
         return companyService.updateComment(id, commentDetails);
@@ -98,6 +113,11 @@ public class CompanyController {
     @PutMapping("/about/{id}")
     public ResponseEntity<?> updateAbout(@PathVariable long id, @RequestBody AboutCompany aboutCompany) {
         return companyService.updateAbout(id,aboutCompany);
+    }
+
+    @PostMapping("/notif/{ownerId}/{viewerId}")
+    public ResponseEntity<?> viewNotification(@PathVariable(value="ownerId") long ownerId,@PathVariable(value="viewerId") long viewerId ) {
+        return companyService.viewNotification(ownerId,viewerId);
     }
 
 }

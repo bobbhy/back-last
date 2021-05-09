@@ -93,9 +93,9 @@ public class AuthService {
         user.setRoles(Collections.singleton(userRole));
         user.setEnabled(false);
         if (userRole.getId() == 1) {
-            if (!signUpRequest.getEmail().endsWith("@uit.ac.ma")) {
-                return new ResponseEntity(new ApiResponse(false, "Use your university mail"), HttpStatus.BAD_REQUEST);
-            }
+           if (!signUpRequest.getEmail().endsWith("@uit.ac.ma")) {
+               return new ResponseEntity(new ApiResponse(false, "Use your university mail"), HttpStatus.BAD_REQUEST);
+           }
             Etablishment etablishment = etablishementRepository.getById(signUpRequest.getEtablishment_id());
             user.setEtablishment(etablishment);
             user.setCv(new Cv());

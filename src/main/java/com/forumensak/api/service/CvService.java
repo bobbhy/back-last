@@ -67,6 +67,8 @@ public class CvService {
     NotificationRepository notificationRepository;
     @Autowired
     RoleRepository roleRepository;
+    @Autowired
+    LinkRepository linkRepository;
 
     public static String encoder(String imagePath) {
         String base64Image = "";
@@ -128,7 +130,6 @@ public class CvService {
     }
 
 
-
     public ResponseEntity<?> uploadAbout(About about, String authHeader) {
         String message = "";
         try {
@@ -137,10 +138,11 @@ public class CvService {
             User user = userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist"));
 
             user.getCv().getAbout().setNumber(about.getNumber());
-            user.getCv().getAbout().setSocials(about.getSocials());
             user.getCv().getAbout().setCity(about.getCity());
-            user.getCv().getAbout().setFirstName(about.getFirstName());
-            user.getCv().getAbout().setLastName(about.getLastName());
+            if (!about.getFirstName().isEmpty() && !about.getLastName().isEmpty()) {
+                user.getCv().getAbout().setFirstName(about.getFirstName());
+                user.getCv().getAbout().setLastName(about.getLastName());
+            }
             user.getCv().getAbout().setBio(about.getBio());
             user.getCv().getAbout().setAddress(about.getAddress());
             user.getCv().getAbout().setInterests(about.getInterests());
@@ -155,7 +157,7 @@ public class CvService {
     }
 
     public ResponseEntity<?> uploadExperience(Experience experience, String authHeader) {
-        String message = experience.toString();
+        String message = "";
         try {
             String jwt = getJwtFromHeader(authHeader);
             long id = jwtTokenProvider.getUserIdFromJWT(jwt);
@@ -174,6 +176,50 @@ public class CvService {
             message = "Could not upload!";
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
         }
+    }
+
+    public ResponseEntity<?> uploadLink(Link link, String authHeader) {
+        String message = "";
+        boolean k = true;
+        try {
+            String jwt = getJwtFromHeader(authHeader);
+            long linkId = 0;
+            long id = jwtTokenProvider.getUserIdFromJWT(jwt);
+            Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+            User user = userOptional.get();
+            List<Link> linkList = user.getCv().getLinks();
+            for (Link e : linkList) {
+                if (e.getName().equals(link.getName())) {
+                    linkId = e.getId();
+                    k = false;
+                    break;
+                }
+            }
+            if (k) {
+                link.setCv(user.getCv());
+                linkRepository.save(link);
+                userRepository.save(user);
+            } else {
+                Link putLink = linkRepository.findById(linkId)
+                        .orElseThrow(() -> new AppException("User id doesn't exist"));
+                putLink.setUrl(link.getUrl());
+                linkRepository.save(putLink);
+                userRepository.save(user);
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(linkId);
+        } catch (Exception e) {
+            message = "Could not upload!";
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+        }
+    }
+
+    public ResponseEntity<?> getLinks(String authHeader) {
+        String message = "";
+        String jwt = getJwtFromHeader(authHeader);
+        long id = jwtTokenProvider.getUserIdFromJWT(jwt);
+        Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+        User user = userOptional.get();
+        return ResponseEntity.status(HttpStatus.OK).body(user.getCv().getLinks());
     }
 
     public ResponseEntity<?> getExperience(String authHeader) {
@@ -509,7 +555,6 @@ public class CvService {
         }
     }
 
-    // USER SERVICE
     public ResponseEntity<?> uploadPost(Post post, String authHeader) {
         String message = "";
         try {

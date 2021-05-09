@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 
 @Data
@@ -24,8 +25,6 @@ public class About {
     private String number;
     @Size(max = 1200)
     private String bio;
-    @Size(max = 4000)
-    private String socials;
     @Size(max = 1200)
     private String interests;
     private String domaine;

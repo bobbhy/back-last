@@ -33,6 +33,8 @@ public class Cv {
     private List<Software> softwares;
     @OneToMany(orphanRemoval=true,mappedBy="cv")
     private List<Award> awards;
+    @OneToMany(orphanRemoval=true,mappedBy="cv")
+    private List<Link> links;
     private boolean flag;
     private boolean prive;
 }

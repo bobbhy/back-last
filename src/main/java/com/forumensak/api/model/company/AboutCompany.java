@@ -23,7 +23,5 @@ public class AboutCompany {
     private String number;
     @Size(max = 1200)
     private String bio;
-    @Size(max = 4000)
-    private String socials;
     private String domaine;
 }
