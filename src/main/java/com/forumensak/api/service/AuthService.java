@@ -172,6 +172,7 @@ public class AuthService {
     public ResponseEntity<?> deleteUser(Long id) {
         VerificationToken verificationToken = verificationTokenRepository.findByUserId(id)
                 .orElseThrow(() -> new AppException("token not found"));
+        verificationToken.getUser().setEtablishment(null);
         verificationTokenRepository.delete(verificationToken);
         return ResponseEntity.ok("Success");
     }
