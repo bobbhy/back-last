@@ -129,7 +129,6 @@ public class CvService {
         }
     }
 
-
     public ResponseEntity<?> uploadAbout(About about, String authHeader) {
         String message = "";
         try {
@@ -139,10 +138,8 @@ public class CvService {
 
             user.getCv().getAbout().setNumber(about.getNumber());
             user.getCv().getAbout().setCity(about.getCity());
-            if (!about.getFirstName().isEmpty() && !about.getLastName().isEmpty()) {
-                user.getCv().getAbout().setFirstName(about.getFirstName());
-                user.getCv().getAbout().setLastName(about.getLastName());
-            }
+            user.getCv().getAbout().setFirstName(about.getFirstName());
+            user.getCv().getAbout().setLastName(about.getLastName());
             user.getCv().getAbout().setBio(about.getBio());
             user.getCv().getAbout().setAddress(about.getAddress());
             user.getCv().getAbout().setInterests(about.getInterests());
@@ -185,7 +182,8 @@ public class CvService {
             String jwt = getJwtFromHeader(authHeader);
             long linkId = 0;
             long id = jwtTokenProvider.getUserIdFromJWT(jwt);
-            Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+            Optional<User> userOptional = Optional.ofNullable(
+                    userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
             User user = userOptional.get();
             List<Link> linkList = user.getCv().getLinks();
             for (Link e : linkList) {
@@ -217,7 +215,8 @@ public class CvService {
         String message = "";
         String jwt = getJwtFromHeader(authHeader);
         long id = jwtTokenProvider.getUserIdFromJWT(jwt);
-        Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+        Optional<User> userOptional = Optional
+                .ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
         User user = userOptional.get();
         return ResponseEntity.status(HttpStatus.OK).body(user.getCv().getLinks());
     }
@@ -462,8 +461,8 @@ public class CvService {
     public ResponseEntity<?> getAbbout(String authHeader) {
         String jwt = getJwtFromHeader(authHeader);
         long id = jwtTokenProvider.getUserIdFromJWT(jwt);
-        Optional<User> userOptional = Optional.ofNullable(
-                userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+        Optional<User> userOptional = Optional
+                .ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
         User user = userOptional.get();
         return ResponseEntity.status(HttpStatus.OK).body(user.getCv().getAbout());
 

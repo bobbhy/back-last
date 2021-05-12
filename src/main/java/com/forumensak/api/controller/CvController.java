@@ -1,6 +1,5 @@
 package com.forumensak.api.controller;
 
-
 import com.forumensak.api.model.cv.*;
 import com.forumensak.api.model.social.Comment;
 import com.forumensak.api.model.social.Post;
@@ -34,13 +33,14 @@ public class CvController {
     }
 
     @PostMapping("/image")
-    public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file, @RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file,
+            @RequestHeader("Authorization") String authHeader) {
         return cvService.uploadImage(file, authHeader);
     }
 
     @PutMapping("/link")
-    public ResponseEntity<?> uploadLink(@RequestBody Link link,@RequestHeader("Authorization") String authHeader){
-        return cvService.uploadLink(link,authHeader);
+    public ResponseEntity<?> uploadLink(@RequestBody Link link, @RequestHeader("Authorization") String authHeader) {
+        return cvService.uploadLink(link, authHeader);
     }
 
     @GetMapping("/image/{id}")
@@ -57,14 +57,15 @@ public class CvController {
     public ResponseEntity<?> getAbbout(@RequestHeader("Authorization") String authHeader) {
         return cvService.getAbbout(authHeader);
     }
-    @PostMapping("/about")
+
+    @PutMapping("/about")
     public ResponseEntity<?> uploadAbout(@RequestBody About about, @RequestHeader("Authorization") String authHeader) {
         return cvService.uploadAbout(about, authHeader);
     }
 
-
     @PostMapping("/experience")
-    public ResponseEntity<?> uploadExperience(@RequestBody Experience experience, @RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> uploadExperience(@RequestBody Experience experience,
+            @RequestHeader("Authorization") String authHeader) {
         return cvService.uploadExperience(experience, authHeader);
     }
 
@@ -79,7 +80,8 @@ public class CvController {
     }
 
     @PostMapping("/education")
-    public ResponseEntity<?> uploadEducation(@RequestBody Education education, @RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> uploadEducation(@RequestBody Education education,
+            @RequestHeader("Authorization") String authHeader) {
         return cvService.uploadEducation(education, authHeader);
     }
 
@@ -109,7 +111,8 @@ public class CvController {
     }
 
     @PostMapping("/dev")
-    public ResponseEntity<?> uploadDevLanguage(@RequestBody DevLanguage devLanguage, @RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> uploadDevLanguage(@RequestBody DevLanguage devLanguage,
+            @RequestHeader("Authorization") String authHeader) {
         return cvService.uploadDevLanguage(devLanguage, authHeader);
     }
 
@@ -124,7 +127,8 @@ public class CvController {
     }
 
     @PostMapping("/normal")
-    public ResponseEntity<?> uploadNormalLanguage(@RequestBody NormalLanguage normalLanguage, @RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> uploadNormalLanguage(@RequestBody NormalLanguage normalLanguage,
+            @RequestHeader("Authorization") String authHeader) {
         return cvService.uploadNormalLanguage(normalLanguage, authHeader);
     }
 
@@ -139,7 +143,8 @@ public class CvController {
     }
 
     @PostMapping("/software")
-    public ResponseEntity<?> uploadSoftware(@RequestBody Software software, @RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> uploadSoftware(@RequestBody Software software,
+            @RequestHeader("Authorization") String authHeader) {
         return cvService.uploadSoftware(software, authHeader);
     }
 
@@ -184,7 +189,7 @@ public class CvController {
     }
 
     @GetMapping("/link")
-    public ResponseEntity<?> getLinks(@RequestHeader("Authorization") String authHeader){
+    public ResponseEntity<?> getLinks(@RequestHeader("Authorization") String authHeader) {
         return cvService.getLinks(authHeader);
     }
 
@@ -224,7 +229,8 @@ public class CvController {
     }
 
     @PostMapping("/post/{postId}/comment")
-    public ResponseEntity<?> uploadComment(@PathVariable(value = "postId") long postId, @RequestBody Comment comment, @RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> uploadComment(@PathVariable(value = "postId") long postId, @RequestBody Comment comment,
+            @RequestHeader("Authorization") String authHeader) {
         return cvService.uploadComment(postId, comment, authHeader);
     }
 
@@ -264,22 +270,26 @@ public class CvController {
     }
 
     @PutMapping("/comment/{commentId}/{likerId}/liking")
-    public ResponseEntity<?> likeComment(@PathVariable(value = "commentId") long commentId, @PathVariable(value = "likerId") long likerId) {
+    public ResponseEntity<?> likeComment(@PathVariable(value = "commentId") long commentId,
+            @PathVariable(value = "likerId") long likerId) {
         return cvService.likeComment(commentId, likerId);
     }
 
     @PutMapping("/post/{postId}/{likerId}/liking")
-    public ResponseEntity<?> likePost(@PathVariable(value = "postId") long postId, @PathVariable(value = "likerId") long likerId) {
+    public ResponseEntity<?> likePost(@PathVariable(value = "postId") long postId,
+            @PathVariable(value = "likerId") long likerId) {
         return cvService.likePost(postId, likerId);
     }
 
     @DeleteMapping("/comment/{commentId}/unliking")
-    public ResponseEntity<?> unlikeComment(@PathVariable(value = "commentId") long commentId, @RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> unlikeComment(@PathVariable(value = "commentId") long commentId,
+            @RequestHeader("Authorization") String authHeader) {
         return cvService.unlikeComment(commentId, authHeader);
     }
 
     @DeleteMapping("/post/{postId}/unliking")
-    public ResponseEntity<?> unlikePost(@PathVariable(value = "postId") long postId, @RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> unlikePost(@PathVariable(value = "postId") long postId,
+            @RequestHeader("Authorization") String authHeader) {
         return cvService.unlikePost(postId, authHeader);
     }
 

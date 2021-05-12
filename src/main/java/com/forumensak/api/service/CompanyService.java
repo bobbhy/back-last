@@ -46,7 +46,6 @@ public class CompanyService {
     @Autowired
     LinkRepository linkRepository;
 
-
     public static String encoder(String imagePath) {
         String base64Image = "";
         File file = new File(imagePath);
@@ -88,7 +87,8 @@ public class CompanyService {
             String jwt = getJwtFromHeader(authHeader);
             long linkId = 0;
             long id = jwtTokenProvider.getUserIdFromJWT(jwt);
-            Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+            Optional<User> userOptional = Optional.ofNullable(
+                    userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
             User user = userOptional.get();
             List<Link> linkList = user.getCompany().getLinks();
             for (Link e : linkList) {
@@ -185,7 +185,8 @@ public class CompanyService {
         String message = "";
         String jwt = getJwtFromHeader(authHeader);
         long id = jwtTokenProvider.getUserIdFromJWT(jwt);
-        Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+        Optional<User> userOptional = Optional
+                .ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
         User user = userOptional.get();
         return ResponseEntity.status(HttpStatus.OK).body(user.getCompany().getLinks());
     }
@@ -193,7 +194,8 @@ public class CompanyService {
     public ResponseEntity<?> getAllCompanies() {
         try {
             List<User> users = userRepository.findAll();
-            users = users.stream().filter(user -> user.getRoles().iterator().next().getId() == 3).collect(Collectors.toList());
+            users = users.stream().filter(user -> user.getRoles().iterator().next().getId() == 3)
+                    .collect(Collectors.toList());
             return ResponseEntity.status(HttpStatus.OK).body(users);
         } catch (Exception e) {
             String message = "Error!";
@@ -204,7 +206,8 @@ public class CompanyService {
     public ResponseEntity<?> getUnenabledCompanies() {
         try {
             List<User> users = userRepository.findAll();
-            users = users.stream().filter(user -> user.getRoles().iterator().next().getId() == 3 && !user.getEnabled()).collect(Collectors.toList());
+            users = users.stream().filter(user -> user.getRoles().iterator().next().getId() == 3 && !user.getEnabled())
+                    .collect(Collectors.toList());
             return ResponseEntity.status(HttpStatus.OK).body(users);
         } catch (Exception e) {
             String message = "Error!";
@@ -212,12 +215,12 @@ public class CompanyService {
         }
     }
 
-
     public ResponseEntity<?> getCompany(String authHeader) {
         try {
             String jwt = getJwtFromHeader(authHeader);
             long id = jwtTokenProvider.getUserIdFromJWT(jwt);
-            Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+            Optional<User> userOptional = Optional.ofNullable(
+                    userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
             User user = userOptional.get();
             return ResponseEntity.ok(user.getCompany());
         } catch (Exception e) {
@@ -228,7 +231,8 @@ public class CompanyService {
 
     public ResponseEntity<?> getCompanyById(long id) {
         try {
-            Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+            Optional<User> userOptional = Optional.ofNullable(
+                    userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
             User user = userOptional.get();
             return ResponseEntity.status(HttpStatus.OK).body(user);
         } catch (Exception e) {
@@ -247,7 +251,8 @@ public class CompanyService {
     public ResponseEntity<?> turnFlag(long id) {
         String message = "";
         try {
-            Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+            Optional<User> userOptional = Optional.ofNullable(
+                    userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
             User user = userOptional.get();
             user.getCompany().setFlag(true);
             userRepository.save(user);
@@ -263,7 +268,8 @@ public class CompanyService {
         try {
             String jwt = getJwtFromHeader(authHeader);
             long id = jwtTokenProvider.getUserIdFromJWT(jwt);
-            Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+            Optional<User> userOptional = Optional.ofNullable(
+                    userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
             User user = userOptional.get();
             Post newPost = new Post();
             newPost.setOwner(user);
@@ -277,7 +283,7 @@ public class CompanyService {
             newPost.setRole(post.getRole());
             postRepository.save(newPost);
             userRepository.save(user);
-            //returns the location of the created post
+            // returns the location of the created post
             return ResponseEntity.status(HttpStatus.OK).body(newPost.getId());
         } catch (Exception e) {
             message = "Could not upload!";
@@ -308,10 +314,12 @@ public class CompanyService {
         try {
             String jwt = getJwtFromHeader(authHeader);
             long id = jwtTokenProvider.getUserIdFromJWT(jwt);
-            Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+            Optional<User> userOptional = Optional.ofNullable(
+                    userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
             User user = userOptional.get();
             Comment newComment = new Comment();
-            Optional<Post> postOptional = Optional.ofNullable(postRepository.findById(postId).orElseThrow(() -> new AppException("User id doesn't exist")));
+            Optional<Post> postOptional = Optional.ofNullable(
+                    postRepository.findById(postId).orElseThrow(() -> new AppException("User id doesn't exist")));
             Post post = postOptional.get();
             User postOwner = post.getOwner();
             newComment.setOwner(user);
@@ -338,7 +346,7 @@ public class CompanyService {
             }
             commentRepository.save(newComment);
             userRepository.save(user);
-            //returns the location of the created post
+            // returns the location of the created post
             return ResponseEntity.status(HttpStatus.OK).body(newComment);
         } catch (Exception e) {
             message = "Could not upload!";
@@ -354,7 +362,8 @@ public class CompanyService {
     public ResponseEntity<?> updateComment(long id, Comment commentDetails) {
         String message = "";
         try {
-            Comment comment = commentRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist"));
+            Comment comment = commentRepository.findById(id)
+                    .orElseThrow(() -> new AppException("User id doesn't exist"));
             comment.setMessage(commentDetails.getMessage());
             Comment updatedComment = commentRepository.save(comment);
             return ResponseEntity.status(HttpStatus.OK).body(updatedComment);
@@ -369,7 +378,8 @@ public class CompanyService {
         try {
             String jwt = getJwtFromHeader(authHeader);
             long id = jwtTokenProvider.getUserIdFromJWT(jwt);
-            Optional<User> userOptional = Optional.ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+            Optional<User> userOptional = Optional.ofNullable(
+                    userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
             User user = userOptional.get();
             link.setCompany(user.getCompany());
             linkRepository.save(link);
@@ -397,7 +407,6 @@ public class CompanyService {
         userRepository.save(owner);
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("hhhh"));
     }
-
 
     private String getJwtFromHeader(String authHeader) {
         if (StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")) {
