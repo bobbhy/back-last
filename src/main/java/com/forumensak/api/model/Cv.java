@@ -1,6 +1,9 @@
 package com.forumensak.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.forumensak.api.model.cv.*;
+import com.forumensak.api.model.social.Like;
+import com.forumensak.api.model.social.ProfileViewer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -35,6 +38,8 @@ public class Cv {
     private List<Award> awards;
     @OneToMany(orphanRemoval=true,mappedBy="cv")
     private List<Link> links;
+    @OneToMany(mappedBy = "cv", cascade = CascadeType.REMOVE)
+    private List<ProfileViewer>  profileViewers;
     private boolean flag;
     private boolean prive;
 }

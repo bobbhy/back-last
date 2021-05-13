@@ -4,10 +4,7 @@ import com.forumensak.api.exception.AppException;
 import com.forumensak.api.model.Role;
 import com.forumensak.api.model.User;
 import com.forumensak.api.model.cv.*;
-import com.forumensak.api.model.social.Comment;
-import com.forumensak.api.model.social.Like;
-import com.forumensak.api.model.social.Notification;
-import com.forumensak.api.model.social.Post;
+import com.forumensak.api.model.social.*;
 import com.forumensak.api.payload.NotificationEmail;
 import com.forumensak.api.payload.ResponseMessage;
 import com.forumensak.api.repository.*;
@@ -69,6 +66,8 @@ public class CvService {
     RoleRepository roleRepository;
     @Autowired
     LinkRepository linkRepository;
+    @Autowired
+    ProfileViewerRepository profileViewerRepository;
 
     public static String encoder(String imagePath) {
         String base64Image = "";
@@ -102,6 +101,7 @@ public class CvService {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
         }
     }
+
 
     public ResponseEntity<?> getImage(String authHeader) {
         String message = "";
@@ -219,6 +219,14 @@ public class CvService {
                 .ofNullable(userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
         User user = userOptional.get();
         return ResponseEntity.status(HttpStatus.OK).body(user.getCv().getLinks());
+    }
+
+    public ResponseEntity<?> getProfileViews(String authHeader) {
+        String jwt = getJwtFromHeader(authHeader);
+        long id = jwtTokenProvider.getUserIdFromJWT(jwt);
+        User user = userRepository.findById(id).orElseThrow(() -> new AppException("User doesnt exist"));
+        List<ProfileViewer> profileViewers = profileViewerRepository.findAllByCv(user.getCv());
+        return ResponseEntity.status(HttpStatus.OK).body(profileViewers);
     }
 
     public ResponseEntity<?> getExperience(String authHeader) {
@@ -414,6 +422,28 @@ public class CvService {
     public ResponseEntity<?> deleteNormalLanguage(long id) {
         normalLanguageRepository.deleteById(id);
         return ResponseEntity.status(HttpStatus.OK).body("Deleted successfuly");
+    }
+
+    public ResponseEntity<?> viewProfile(long viewerId, long viewedId) {
+        boolean k = true;
+        User user = userRepository.findById(viewedId).orElseThrow(() -> new AppException("User doesn't exist"));
+        List<ProfileViewer> profileViewerList = profileViewerRepository.findAllByCv(user.getCv());
+        for (ProfileViewer e : profileViewerList) { // just in case
+            if (e.getViewerId() == viewerId) {
+                k = false;
+                break;
+            }
+        }
+        if (k) {
+            ProfileViewer profileViewer = new ProfileViewer();
+            profileViewer.setViewerId(viewerId);
+            profileViewer.setCv(user.getCv());
+            profileViewerRepository.save(profileViewer);
+            userRepository.save(user);
+            return ResponseEntity.status(HttpStatus.OK).body(profileViewer);
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(String.format("User %d has already viewed %s's profile", viewerId, user.getUsername()));
+        }
     }
 
     public ResponseEntity<?> uploadSoftware(Software software, String authHeader) {

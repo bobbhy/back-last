@@ -178,6 +178,11 @@ public class CvController {
         return cvService.updateExperience(id, experienceDetails);
     }
 
+    @PostMapping("/profileview/{viewerId}/{viewedId}")
+    public ResponseEntity<?> viewProfile(@PathVariable(value = "viewerId") long viewerId,@PathVariable(value = "viewedId") long viewedId){
+        return cvService.viewProfile(viewerId,viewedId);
+    }
+
     @GetMapping("/getexperiencebyid/{id}")
     public ResponseEntity<?> getExperienceById(@PathVariable long id) {
         return cvService.getExperienceById(id);
@@ -196,6 +201,11 @@ public class CvController {
     @GetMapping("/geteducationbyid/{id}")
     public ResponseEntity<?> getEducationById(@PathVariable long id) {
         return cvService.getEducationById(id);
+    }
+
+    @GetMapping("/getprofileviews")
+    public ResponseEntity<?> getProfileViews(@RequestHeader("Authorization") String authHeader){
+        return cvService.getProfileViews(authHeader);
     }
 
     @PutMapping("/flag/{id}")
