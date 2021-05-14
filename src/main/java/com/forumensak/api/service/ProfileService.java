@@ -9,7 +9,6 @@ import com.forumensak.api.payload.ResponseMessage;
 import com.forumensak.api.repository.*;
 import com.forumensak.api.security.JwtTokenProvider;
 import lombok.AllArgsConstructor;
-import org.aspectj.weaver.ast.Not;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -19,6 +18,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -357,5 +357,26 @@ public class ProfileService {
             message = "Error";
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(e.getMessage()));
         }
+    }
+
+    public ResponseEntity<?> getReported() {
+        try {
+            List<User> users = userRepository.findAll();
+            users = users.stream().filter(user -> user.isReported())
+                    .collect(Collectors.toList());
+            return ResponseEntity.status(HttpStatus.OK).body(users);
+        } catch (Exception e) {
+            String message = "Error!";
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+        }
+    }
+
+    public ResponseEntity<?> getIsReported(String authHeader) {
+        String jwt = getJwtFromHeader(authHeader);
+        long id = jwtTokenProvider.getUserIdFromJWT(jwt);
+        Optional<User> userOptional = Optional.ofNullable(
+                userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+        User user = userOptional.get();
+        return ResponseEntity.status(HttpStatus.OK).body(user.isReported());
     }
 }

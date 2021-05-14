@@ -23,68 +23,77 @@ public class ProfileController {
     }
 
     @GetMapping("/getall")
-    public ResponseEntity<?> getAll(){
+    public ResponseEntity<?> getAll() {
         return profileService.getAll();
     }
 
     @PostMapping("/add/{id}")
-    public  ResponseEntity<?> connectTo(@RequestHeader("Authorization") String authHeader,@PathVariable Long id)
-    {
-        return profileService.connectTo(authHeader,id);
+    public ResponseEntity<?> connectTo(@RequestHeader("Authorization") String authHeader, @PathVariable Long id) {
+        return profileService.connectTo(authHeader, id);
     }
+
     @PostMapping("/accept/{id}")
-    public ResponseEntity<?> accept(@RequestHeader("Authorization") String authHeader,@PathVariable Long id)
-    {
-        return profileService.accept(authHeader,id);
+    public ResponseEntity<?> accept(@RequestHeader("Authorization") String authHeader, @PathVariable Long id) {
+        return profileService.accept(authHeader, id);
     }
+
     @PostMapping("/notifications")
-    public ResponseEntity<?> handleNotifications(@RequestHeader("Authorization")String authHeader)
-    {
-        return  profileService.handleNotifications(authHeader);
+    public ResponseEntity<?> handleNotifications(@RequestHeader("Authorization") String authHeader) {
+        return profileService.handleNotifications(authHeader);
     }
+
     @PostMapping("/notification/{id}")
-    public ResponseEntity<?> handleNotification(@PathVariable long id)
-    {
-        return  profileService.handleNotification(id);
+    public ResponseEntity<?> handleNotification(@PathVariable long id) {
+        return profileService.handleNotification(id);
     }
+
     @DeleteMapping("/disconnect/{id}")
-    public ResponseEntity<?> disconnect(@RequestHeader("Authorization") String authHeader,@PathVariable Long id)
-    {
-        return profileService.disconnect(authHeader,id);
+    public ResponseEntity<?> disconnect(@RequestHeader("Authorization") String authHeader, @PathVariable Long id) {
+        return profileService.disconnect(authHeader, id);
     }
+
     @GetMapping("/etablishment/all")
-    public ResponseEntity<?> getAllEtablishment()
-    {
+    public ResponseEntity<?> getAllEtablishment() {
         return profileService.getAllEtablishment();
     }
+
     @DeleteMapping("/notification/{id}")
-    public ResponseEntity<?> deleteNotification(@PathVariable Long id){
+    public ResponseEntity<?> deleteNotification(@PathVariable Long id) {
         return profileService.deleteNotification(id);
     }
+
     @GetMapping("/all")
-    public ResponseEntity<?> getAll(@RequestHeader("Authorization") String authHeader)
-    {
+    public ResponseEntity<?> getAll(@RequestHeader("Authorization") String authHeader) {
         return profileService.getAll(authHeader);
     }
+
     @PostMapping("/sendMessage")
-    public ResponseEntity<?> SendMessage(@RequestHeader("Authorization") String authHeader, @RequestBody MessagePayload messagePayload)
-    {
-        return profileService.sendMessage(authHeader,messagePayload);
+    public ResponseEntity<?> SendMessage(@RequestHeader("Authorization") String authHeader, @RequestBody MessagePayload messagePayload) {
+        return profileService.sendMessage(authHeader, messagePayload);
     }
+
     @GetMapping("/allNotifications")
-    public  ResponseEntity<?> getNotifications(@RequestHeader("Authorization") String authHeader)
-    {
+    public ResponseEntity<?> getNotifications(@RequestHeader("Authorization") String authHeader) {
         return profileService.getNotifications(authHeader);
     }
+
     @GetMapping("/allMessages/{id}")
-    public ResponseEntity<?> getMessages(@RequestHeader("Authorization") String authHeader,@PathVariable Long id)
-    {
-        return profileService.getMessages(authHeader,id);
+    public ResponseEntity<?> getMessages(@RequestHeader("Authorization") String authHeader, @PathVariable Long id) {
+        return profileService.getMessages(authHeader, id);
     }
+
     @DeleteMapping("/message/{id}")
-    public ResponseEntity<?> deleteMessage(@PathVariable Long id){
+    public ResponseEntity<?> deleteMessage(@PathVariable Long id) {
         return profileService.deleteMessage(id);
     }
 
+    @GetMapping("/reported")
+    public ResponseEntity<?> getReported() {
+        return profileService.getReported();
+    }
 
+    @GetMapping("/isreported")
+    public ResponseEntity<?> getIsReported(@RequestHeader("Authorization") String authHeader) {
+        return profileService.getIsReported(authHeader);
+    }
 }

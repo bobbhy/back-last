@@ -41,6 +41,8 @@ public class User extends DateAudit {
         @Size(max = 15)
         private String username;
 
+        private boolean reported;
+
         @NaturalId
         @NotBlank
         @Size(max = 40)
