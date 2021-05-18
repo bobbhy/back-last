@@ -14,14 +14,12 @@ import com.forumensak.api.security.JwtTokenProvider;
 import com.forumensak.api.security.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -93,9 +91,9 @@ public class AuthService {
         user.setRoles(Collections.singleton(userRole));
         user.setEnabled(false);
         if (userRole.getId() == 1) {
-           if (!signUpRequest.getEmail().endsWith("@uit.ac.ma")) {
-               return new ResponseEntity(new ApiResponse(false, "Use your university mail"), HttpStatus.BAD_REQUEST);
-           }
+            if (!signUpRequest.getEmail().endsWith("@uit.ac.ma")) {
+                return new ResponseEntity(new ApiResponse(false, "Use your university mail"), HttpStatus.BAD_REQUEST);
+            }
             Etablishment etablishment = etablishementRepository.getById(signUpRequest.getEtablishment_id());
             user.setEtablishment(etablishment);
             user.setCv(new Cv());
