@@ -126,10 +126,32 @@ public class CvController {
         return cvService.deleteDevLanguage(id);
     }
 
+    @DeleteMapping("/otherItem/{id}")
+    public ResponseEntity<?> deleteOtherItem(@PathVariable long id) {
+        return cvService.deleteOtherItem(id);
+    }
+
     @PostMapping("/normal")
     public ResponseEntity<?> uploadNormalLanguage(@RequestBody NormalLanguage normalLanguage,
             @RequestHeader("Authorization") String authHeader) {
         return cvService.uploadNormalLanguage(normalLanguage, authHeader);
+    }
+
+    @PostMapping("/other/{name}")
+    public ResponseEntity<?> createOther(@PathVariable String name, @RequestHeader("Authorization") String authHeader) {
+        return cvService.createOther(name, authHeader);
+    }
+
+    @PostMapping("/other/{name}/add")
+    public ResponseEntity<?> createOtherItem(@PathVariable String name, @RequestBody OtherItem otherItem,
+            @RequestHeader("Authorization") String authHeader) {
+        return cvService.createOtherItem(name, otherItem, authHeader);
+    }
+
+    @GetMapping("/other/{name}")
+    public ResponseEntity<?> getAllOtherItems(@PathVariable String name,
+            @RequestHeader("Authorization") String authHeader) {
+        return cvService.getAllOtherItems(name, authHeader);
     }
 
     @GetMapping("/normal")
@@ -179,8 +201,9 @@ public class CvController {
     }
 
     @PostMapping("/profileview/{viewerId}/{viewedId}")
-    public ResponseEntity<?> viewProfile(@PathVariable(value = "viewerId") long viewerId,@PathVariable(value = "viewedId") long viewedId){
-        return cvService.viewProfile(viewerId,viewedId);
+    public ResponseEntity<?> viewProfile(@PathVariable(value = "viewerId") long viewerId,
+            @PathVariable(value = "viewedId") long viewedId) {
+        return cvService.viewProfile(viewerId, viewedId);
     }
 
     @GetMapping("/getexperiencebyid/{id}")
@@ -204,7 +227,7 @@ public class CvController {
     }
 
     @GetMapping("/getprofileviews")
-    public ResponseEntity<?> getProfileViews(@RequestHeader("Authorization") String authHeader){
+    public ResponseEntity<?> getProfileViews(@RequestHeader("Authorization") String authHeader) {
         return cvService.getProfileViews(authHeader);
     }
 

@@ -14,16 +14,17 @@ import com.forumensak.api.model.Cv;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Other {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
-    private int value;
     @OneToMany(orphanRemoval = true, mappedBy = "other")
     private List<OtherItem> otherItems;
     @ManyToOne(fetch = FetchType.LAZY)

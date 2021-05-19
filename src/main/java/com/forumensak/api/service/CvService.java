@@ -68,6 +68,10 @@ public class CvService {
     LinkRepository linkRepository;
     @Autowired
     ProfileViewerRepository profileViewerRepository;
+    @Autowired
+    OtherRepository otherRepository;
+    @Autowired
+    OtherItemRepository otherItemRepository;
 
     public static String encoder(String imagePath) {
         String base64Image = "";
@@ -101,7 +105,6 @@ public class CvService {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
         }
     }
-
 
     public ResponseEntity<?> getImage(String authHeader) {
         String message = "";
@@ -362,6 +365,13 @@ public class CvService {
             Optional<User> userOptional = Optional.ofNullable(
                     userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
             User user = userOptional.get();
+            for (DevLanguage devLanguagex : user.getCv().getDevLanguages()) {
+                if (devLanguagex.getName().equals(devLanguage.getName())) {
+                    devLanguagex.setValue(devLanguage.getValue());
+                    devLanguageRepository.save(devLanguagex);
+                    return ResponseEntity.ok("Already exists");
+                }
+            }
             devLanguage.setCv(user.getCv());
             devLanguageRepository.save(devLanguage);
             userRepository.save(user);
@@ -386,6 +396,11 @@ public class CvService {
 
     public ResponseEntity<?> deleteDevLanguage(long id) {
         devLanguageRepository.deleteById(id);
+        return ResponseEntity.status(HttpStatus.OK).body("Deleted successfuly");
+    }
+
+    public ResponseEntity<?> deleteOtherItem(long id) {
+        otherItemRepository.deleteById(id);
         return ResponseEntity.status(HttpStatus.OK).body("Deleted successfuly");
     }
 
@@ -442,7 +457,8 @@ public class CvService {
             userRepository.save(user);
             return ResponseEntity.status(HttpStatus.OK).body(profileViewer);
         } else {
-            return ResponseEntity.status(HttpStatus.OK).body(String.format("User %d has already viewed %s's profile", viewerId, user.getUsername()));
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(String.format("User %d has already viewed %s's profile", viewerId, user.getUsername()));
         }
     }
 
@@ -465,6 +481,85 @@ public class CvService {
         } catch (Exception e) {
             message = "Could not upload!";
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+        }
+    }
+
+    public ResponseEntity<?> createOther(String name, String authHeader) {
+        String message = "";
+        try {
+            System.out.println(authHeader);
+            String jwt = getJwtFromHeader(authHeader);
+            long id = jwtTokenProvider.getUserIdFromJWT(jwt);
+            Optional<User> userOptional = Optional.ofNullable(
+                    userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+            User user = userOptional.get();
+            for (Other other : user.getCv().getOthers()) {
+                if (other.getName().equals(name)) {
+                    return ResponseEntity.ok("Already exists but it's okay");
+                }
+            }
+            Other other = new Other();
+            other.setCv(user.getCv());
+            other.setName(name);
+            otherRepository.save(other);
+            return ResponseEntity.ok("Success");
+        } catch (Exception e) {
+            message = "Could not create";
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(e.getMessage()));
+        }
+    }
+
+    public ResponseEntity<?> getAllOtherItems(String name, String authHeader) {
+        String message = "";
+        try {
+            System.out.println(authHeader);
+            String jwt = getJwtFromHeader(authHeader);
+            long id = jwtTokenProvider.getUserIdFromJWT(jwt);
+            Optional<User> userOptional = Optional.ofNullable(
+                    userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+            User user = userOptional.get();
+            for (Other other : user.getCv().getOthers()) {
+                if (other.getName().equals(name)) {
+                    return ResponseEntity.ok(other.getOtherItems());
+                }
+            }
+            return ResponseEntity.ok("Not found");
+        } catch (Exception e) {
+            message = "Could not create";
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(e.getMessage()));
+        }
+    }
+
+    public ResponseEntity<?> createOtherItem(String name, OtherItem otherItemx, String authHeader) {
+        String message = "";
+        try {
+            System.out.println(name);
+            String jwt = getJwtFromHeader(authHeader);
+            long id = jwtTokenProvider.getUserIdFromJWT(jwt);
+            Optional<User> userOptional = Optional.ofNullable(
+                    userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
+            User user = userOptional.get();
+            for (Other other : user.getCv().getOthers()) {
+                if (other.getName().equals(name)) {
+                    OtherItem otherItem = new OtherItem();
+                    for (OtherItem otherItem2 : other.getOtherItems()) {
+                        if (otherItem2.getName().equals(otherItemx.getName())) {
+                            otherItem2.setValue(otherItemx.getValue());
+                            otherItemRepository.save(otherItem2);
+                            return ResponseEntity.ok("updated");
+                        }
+                    }
+                    otherItem.setOther(other);
+                    otherItem.setName(otherItemx.getName());
+                    otherItem.setValue(otherItemx.getValue());
+                    otherItemRepository.save(otherItem);
+                    return ResponseEntity.ok("Success");
+                }
+            }
+            return ResponseEntity.ok("Name not found");
+        } catch (Exception e) {
+            message = "Could not create";
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(e.getMessage()));
         }
     }
 
