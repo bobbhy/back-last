@@ -33,9 +33,33 @@ public class AuthController {
     }
 
     @DeleteMapping("/deleteUser/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable long id)
-    {
+    public ResponseEntity<?> deleteUser(@PathVariable long id) {
         return authService.deleteUser(id);
+    }
+
+    @PutMapping("/disableAccount/{id}")
+    public ResponseEntity<?> disableAccount(@PathVariable long id) {
+        return authService.disableAccount(id);
+    }
+
+    @PutMapping("/reportbypost/{postId}")
+    public ResponseEntity<?> reportAccountByPost(@PathVariable long postId) {
+        return authService.reportAccountByPost(postId);
+    }
+
+    @PutMapping("/reportbycomment/{commentId}")
+    public ResponseEntity<?> reportAccountByComment(@PathVariable long commentId) {
+        return authService.reportAccountByComment(commentId);
+    }
+
+    @PutMapping("/reportbyid/{id}")
+    public ResponseEntity<?> reportAccountById(@PathVariable long id) {
+        return authService.reportAccountById(id);
+    }
+
+    @PutMapping("/unreportbyid/{id}")
+    public ResponseEntity<?> unreportAccountById(@PathVariable long id) {
+        return authService.unreportAccountById(id);
     }
 
 }

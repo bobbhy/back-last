@@ -5,11 +5,10 @@ import com.forumensak.api.exception.BadRequestException;
 import com.forumensak.api.model.*;
 import com.forumensak.api.model.company.AboutCompany;
 import com.forumensak.api.model.cv.About;
+import com.forumensak.api.model.social.Comment;
+import com.forumensak.api.model.social.Post;
 import com.forumensak.api.payload.*;
-import com.forumensak.api.repository.EtablishementRepository;
-import com.forumensak.api.repository.RoleRepository;
-import com.forumensak.api.repository.UserRepository;
-import com.forumensak.api.repository.VerificationTokenRepository;
+import com.forumensak.api.repository.*;
 import com.forumensak.api.security.JwtTokenProvider;
 import com.forumensak.api.security.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +27,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,6 +51,10 @@ public class AuthService {
     VerificationTokenRepository verificationTokenRepository;
     @Autowired
     MailService mailService;
+    @Autowired
+    PostRepository postRepository;
+    @Autowired
+    CommentRepository commentRepository;
 
     @Value("${app.front}")
     private String front;
@@ -90,6 +96,7 @@ public class AuthService {
 
         user.setRoles(Collections.singleton(userRole));
         user.setEnabled(false);
+        user.setReported(false);
         if (userRole.getId() == 1) {
             if (!signUpRequest.getEmail().endsWith("@uit.ac.ma")) {
                 return new ResponseEntity(new ApiResponse(false, "Use your university mail"), HttpStatus.BAD_REQUEST);
@@ -121,7 +128,7 @@ public class AuthService {
         if (userRole.getId() == 3) {
             mailService.sendEmail(new NotificationEmail("Activate accout for enterprise manager",
                     "aymane.elmouhtarim@gmail.com", "Activate user," + user.getUsername() + ", " + user.getEmail()
-                            + "by clicking here :\n" + "<a href=\"" + front + "/admin" + "\">Check it out</a>"));
+                    + "by clicking here :\n" + "<a href=\"" + front + "/admin" + "\">Check it out</a>"));
         }
 
         return ResponseEntity.created(location).body(new ApiResponse(true,
@@ -172,6 +179,47 @@ public class AuthService {
                 .orElseThrow(() -> new AppException("token not found"));
         verificationToken.getUser().setEtablishment(null);
         verificationTokenRepository.delete(verificationToken);
+        return ResponseEntity.ok("Success");
+    }
+
+    public ResponseEntity<?> disableAccount(long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new BadRequestException("User no longer exist in database"));
+        user.setEnabled(false);
+        userRepository.save(user);
+        return ResponseEntity.ok("Success");
+    }
+
+    public ResponseEntity<?> reportAccountById(long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new BadRequestException("User not found"));
+        user.setReported(true);
+        userRepository.save(user);
+        return ResponseEntity.ok("Success");
+    }
+
+    public ResponseEntity<?> unreportAccountById(long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new BadRequestException("User not found"));
+        user.setReported(false);
+        userRepository.save(user);
+        return ResponseEntity.ok("Success");
+    }
+
+    public ResponseEntity<?> reportAccountByPost(long postId) {
+        Optional<Post> postOptional = Optional
+                .ofNullable(postRepository.findById(postId).orElseThrow(() -> new AppException("Post doesn't exist")));
+        Post post = postOptional.get();
+        User user = userRepository.findById(post.getOwnersId()).orElseThrow(() -> new BadRequestException("User not found"));
+        user.setReported(true);
+        userRepository.save(user);
+        return ResponseEntity.ok("Success");
+    }
+
+    public ResponseEntity<?> reportAccountByComment(long commentId) {
+        Optional<Comment> commentOptional = Optional.ofNullable(commentRepository.findById(commentId).orElseThrow(() -> new AppException("Comment doesn't exist")));
+        Comment comment = commentOptional.get();
+        User user = userRepository.findById(comment.getOwnersId()).orElseThrow(() -> new BadRequestException("User not found"));
+        user.setReported(true);
+        userRepository.save(user);
         return ResponseEntity.ok("Success");
     }
 
