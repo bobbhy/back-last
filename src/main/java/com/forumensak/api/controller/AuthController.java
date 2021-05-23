@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -40,6 +39,11 @@ public class AuthController {
     @PutMapping("/disableAccount/{id}")
     public ResponseEntity<?> disableAccount(@PathVariable long id) {
         return authService.disableAccount(id);
+    }
+
+    @PutMapping("/enableAccount/{id}")
+    public ResponseEntity<?> enableAccount(@PathVariable long id) {
+        return authService.enableAccount(id);
     }
 
     @PutMapping("/reportbypost/{postId}")

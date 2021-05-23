@@ -122,13 +122,13 @@ public class AuthService {
         if (userRole.getId() == 1) {
             mailService.sendEmail(new NotificationEmail("Please activate your account", user.getEmail(),
                     "Thank you for signing up to forum ensak,"
-                            + "please click on the below url to activate your account :\n" + "<a href=\"" + front
-                            + "/confirm?token=" + token + "\">Validate</a>"));
+                            + "please click on the below url to activate your account :\n" + "<br/><a href=\"" + front
+                            + "/confirm?token=" + token + "\">" + front + "/confirm?token" + token + "</a>"));
         }
         if (userRole.getId() == 3) {
-            mailService.sendEmail(new NotificationEmail("Activate accout for enterprise manager",
+            mailService.sendEmail(new NotificationEmail("Activate account for enterprise manager",
                     "aymane.elmouhtarim@gmail.com", "Activate user," + user.getUsername() + ", " + user.getEmail()
-                    + "by clicking here :\n" + "<a href=\"" + front + "/admin" + "\">Check it out</a>"));
+                            + "by clicking here :\n" + "<a href=\"" + front + "/admin" + "\">Check it out</a>"));
         }
 
         return ResponseEntity.created(location).body(new ApiResponse(true,
@@ -190,6 +190,14 @@ public class AuthService {
         return ResponseEntity.ok("Success");
     }
 
+    public ResponseEntity<?> enableAccount(long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new BadRequestException("User no longer exist in database"));
+        user.setEnabled(true);
+        userRepository.save(user);
+        return ResponseEntity.ok("Success");
+    }
+
     public ResponseEntity<?> reportAccountById(long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new BadRequestException("User not found"));
         user.setReported(true);
@@ -208,16 +216,19 @@ public class AuthService {
         Optional<Post> postOptional = Optional
                 .ofNullable(postRepository.findById(postId).orElseThrow(() -> new AppException("Post doesn't exist")));
         Post post = postOptional.get();
-        User user = userRepository.findById(post.getOwnersId()).orElseThrow(() -> new BadRequestException("User not found"));
+        User user = userRepository.findById(post.getOwnersId())
+                .orElseThrow(() -> new BadRequestException("User not found"));
         user.setReported(true);
         userRepository.save(user);
         return ResponseEntity.ok("Success");
     }
 
     public ResponseEntity<?> reportAccountByComment(long commentId) {
-        Optional<Comment> commentOptional = Optional.ofNullable(commentRepository.findById(commentId).orElseThrow(() -> new AppException("Comment doesn't exist")));
+        Optional<Comment> commentOptional = Optional.ofNullable(
+                commentRepository.findById(commentId).orElseThrow(() -> new AppException("Comment doesn't exist")));
         Comment comment = commentOptional.get();
-        User user = userRepository.findById(comment.getOwnersId()).orElseThrow(() -> new BadRequestException("User not found"));
+        User user = userRepository.findById(comment.getOwnersId())
+                .orElseThrow(() -> new BadRequestException("User not found"));
         user.setReported(true);
         userRepository.save(user);
         return ResponseEntity.ok("Success");

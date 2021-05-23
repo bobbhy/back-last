@@ -38,7 +38,7 @@ public class User extends DateAudit {
         private String companyName;
 
         @NotBlank(message = "username must not be blank")
-        @Size(max = 15)
+        @Size(max = 40)
         private String username;
 
         private boolean reported;

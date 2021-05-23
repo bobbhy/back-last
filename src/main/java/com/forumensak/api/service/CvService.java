@@ -412,6 +412,13 @@ public class CvService {
             Optional<User> userOptional = Optional.ofNullable(
                     userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist")));
             User user = userOptional.get();
+            for (NormalLanguage normaLanguagex : user.getCv().getNormalLanguages()) {
+                if (normaLanguagex.getName().equals(normalLanguage.getName())) {
+                    normaLanguagex.setValue(normalLanguage.getValue());
+                    normalLanguageRepository.save(normaLanguagex);
+                    return ResponseEntity.ok("Already exists");
+                }
+            }
             normalLanguage.setCv(user.getCv());
             normalLanguageRepository.save(normalLanguage);
             userRepository.save(user);
