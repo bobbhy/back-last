@@ -138,7 +138,6 @@ public class CvService {
             String jwt = getJwtFromHeader(authHeader);
             long id = jwtTokenProvider.getUserIdFromJWT(jwt);
             User user = userRepository.findById(id).orElseThrow(() -> new AppException("User id doesn't exist"));
-
             user.getCv().getAbout().setNumber(about.getNumber());
             user.getCv().getAbout().setCity(about.getCity());
             user.getCv().getAbout().setFirstName(about.getFirstName());

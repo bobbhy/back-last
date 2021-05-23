@@ -16,9 +16,8 @@ import java.util.stream.Stream;
 @Service
 public class FilesStorageServiceImpl implements FilesStorageService {
 
-//    private final Path root = Paths.get("src/main/upload/static/images");
+    // private final Path root = Paths.get("src/main/upload/static/images");
     private final Path root = Paths.get("static/images");
-
 
     @Override
     public void init() {
@@ -32,8 +31,22 @@ public class FilesStorageServiceImpl implements FilesStorageService {
     @Override
     public void save(MultipartFile file) {
         try {
-            Files.deleteIfExists(this.root.resolve(file.getOriginalFilename()));
-            Files.copy(file.getInputStream(), this.root.resolve(file.getOriginalFilename()));
+
+            if (file.getOriginalFilename().endsWith(".jpeg") || file.getOriginalFilename().endsWith(".jpg")
+                    || file.getOriginalFilename().endsWith(".png") || file.getOriginalFilename().endsWith(".tif")) {
+                if (file.getSize() > 1000000) {
+                    throw new RuntimeException("Could not store the file. Error: File tool large ");
+                }
+                Files.deleteIfExists(this.root.resolve(file.getOriginalFilename()));
+                Files.copy(file.getInputStream(), this.root.resolve(file.getOriginalFilename()));
+            } else {
+                throw new RuntimeException("Could not store the file. Error: Not the right file type ");
+            }
+            System.out.println(file.getOriginalFilename());
+            System.out.println(file.getOriginalFilename());
+            System.out.println(file.getSize());
+            System.out.println(file.getContentType());
+
         } catch (Exception e) {
             throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
         }
