@@ -85,7 +85,6 @@ public class AuthService {
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
             return new ResponseEntity(new ApiResponse(false, "Email Address already in use!"), HttpStatus.BAD_REQUEST);
         }
-
         // Creating user's account
         User user = new User(signUpRequest.getName(), signUpRequest.getCompanyName(), signUpRequest.getUsername(),
                 signUpRequest.getEmail(), signUpRequest.getPassword());
